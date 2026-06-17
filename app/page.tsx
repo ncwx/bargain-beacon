@@ -278,7 +278,7 @@ const selectedBrand =
             </p>
           </div>
 
-          <div className="w-full md:max-w-[380px]">
+          <div className="w-full md:mt-3.5 md:max-w-[380px]">
             <Suspense
               fallback={
                 <div className="h-[52px] rounded-[14px] border border-[#f2e4e9] bg-white" />
