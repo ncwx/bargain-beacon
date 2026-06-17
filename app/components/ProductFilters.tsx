@@ -53,6 +53,13 @@ export default function ProductFilters({
   const selectedSort =
     searchParams.get("sort") ?? "value";
 
+  const inStockOnly =
+    searchParams.get("stock") !== "all";
+
+  const deliveryOnly =
+    searchParams.get("delivery") !==
+    "all";
+
   const minPriceParam =
     searchParams.get("minPrice");
 
@@ -194,6 +201,23 @@ export default function ProductFilters({
     navigateWithParams(params);
   }
 
+  function updateAvailabilityFilter(
+    name: "stock" | "delivery",
+    checked: boolean,
+  ) {
+    const params = new URLSearchParams(
+        searchParams.toString(),
+    );
+
+    if (checked) {
+        params.delete(name);
+    } else {
+        params.set(name, "all");
+    }
+
+    navigateWithParams(params);
+  }
+
   function handleMinChange(value: number) {
     const nextMin = Math.min(
       value,
@@ -227,6 +251,8 @@ export default function ProductFilters({
     params.delete("brand");
     params.delete("minPrice");
     params.delete("maxPrice");
+    params.delete("stock");
+    params.delete("delivery");
 
     navigateWithParams(params);
   }
@@ -234,6 +260,8 @@ export default function ProductFilters({
   const hasActiveFilters = Boolean(
     selectedRetailer ||
       selectedBrand ||
+      !inStockOnly ||
+      !deliveryOnly ||
       selectedMinPrice > safeMinPrice ||
       selectedMaxPrice < safeMaxPrice,
   );
@@ -308,6 +336,38 @@ export default function ProductFilters({
               </option>
             ))}
           </select>
+
+          <label className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] transition hover:border-[#fb99b9]">
+            <input
+                type="checkbox"
+                checked={inStockOnly}
+                onChange={(event) =>
+                updateAvailabilityFilter(
+                    "stock",
+                    event.target.checked,
+                )
+                }
+                className="h-4 w-4 accent-[#fb99b9]"
+            />
+
+            <span>in stock only</span>
+        </label>
+
+        <label className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] transition hover:border-[#fb99b9]">
+            <input
+                type="checkbox"
+                checked={deliveryOnly}
+                onChange={(event) =>
+                updateAvailabilityFilter(
+                    "delivery",
+                    event.target.checked,
+                )
+                }
+                className="h-4 w-4 accent-[#fb99b9]"
+            />
+
+            <span>delivery available</span>
+        </label>
 
           <label
             className="sr-only"

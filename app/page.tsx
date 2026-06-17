@@ -45,6 +45,8 @@ type HomeProps = {
     sort?: string | string[];
     minPrice?: string | string[];
     maxPrice?: string | string[];
+    stock?: string | string[];
+    delivery?: string | string[];
   }>;
 };
 
@@ -135,6 +137,12 @@ export default async function Home({
       ? resolvedSearchParams.sort
       : "value";
 
+      const inStockOnly =
+        resolvedSearchParams.stock !== "all";
+
+      const deliveryOnly =
+        resolvedSearchParams.delivery !== "all";
+
   const minPriceParam =
     typeof resolvedSearchParams.minPrice ===
     "string"
@@ -201,9 +209,7 @@ export default async function Home({
 
       if (
         !product ||
-        product.ply !== 3 ||
-        row.in_stock !== true ||
-        row.delivery_available !== true
+        product.ply !== 3
       ) {
         return [];
       }
@@ -266,6 +272,10 @@ export default async function Home({
           reviewCount:
             product.review_count,
           checkedAt: row.checked_at,
+          inStock: row.in_stock === true,
+          deliveryAvailable:
+            row.delivery_available ===
+            true,
           rollsPerPack:
             product.rolls_per_pack,
           score,
@@ -277,11 +287,7 @@ export default async function Home({
         a.score.adjustedValueScore -
         b.score.adjustedValueScore,
     )
-    .map((row, index) => ({
-      ...row,
-      rank: index + 1,
-    }));
-
+    
   const deliveredPrices = ranked.map(
     (row) =>
       row.score.deliveredPrice,
@@ -385,16 +391,31 @@ export default async function Home({
         row.score.deliveredPrice <=
           selectedMaxPrice;
 
+      const matchesStock =
+        !inStockOnly || row.inStock;
+
+      const matchesDelivery =
+        !deliveryOnly ||
+        row.deliveryAvailable;
+
       return (
         matchesSearch &&
         matchesRetailer &&
         matchesBrand &&
-        matchesPriceRange
+        matchesPriceRange &&
+        matchesStock &&
+        matchesDelivery
       );
     });
 
+  const valueRanked =
+    filteredRanked.map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
+
   const sortedRanked = [
-    ...filteredRanked,
+    ...valueRanked,
   ].sort((a, b) => {
     switch (selectedSort) {
       case "price-low":
@@ -433,7 +454,14 @@ export default async function Home({
     }
   });
 
-  const bestProduct = ranked[0];
+  const eligibleProducts =
+    ranked.filter(
+      (row) =>
+        row.inStock &&
+        row.deliveryAvailable,
+    );
+
+  const bestProduct = eligibleProducts[0];
 
   const bestRawScore =
     bestProduct?.score
@@ -467,7 +495,7 @@ export default async function Home({
     : "—";
 
   const retailerCount = new Set(
-    ranked.map(
+    eligibleProducts.map(
       (row) => row.retailer,
     ),
   ).size;
@@ -476,6 +504,8 @@ export default async function Home({
     query ||
       selectedRetailer ||
       selectedBrand ||
+      !inStockOnly ||
+      !deliveryOnly ||
       selectedMinPrice >
         priceRangeMin ||
       selectedMaxPrice <
@@ -616,7 +646,7 @@ export default async function Home({
               </p>
 
               <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
-                {ranked.length} products
+                {eligibleProducts.length} products
               </p>
 
               <p className="mt-2 text-base text-[#806c74]">
@@ -824,6 +854,23 @@ export default async function Home({
                             "—"}{" "}
                           rolls
                         </p>
+
+                        {(!row.inStock ||
+                          !row.deliveryAvailable) && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {!row.inStock && (
+                              <span className="rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                                out of stock
+                              </span>
+                            )}
+
+                            {!row.deliveryAvailable && (
+                              <span className="rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                                collection only
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </td>
 
                       <td className="px-5 py-5 text-[#4e3d44]">
