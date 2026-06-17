@@ -1,8 +1,8 @@
+import ProductFilters from "@/app/components/ProductFilters";
+import SearchBar from "@/app/components/SearchBar";
 import { calculateScore } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
 import { Suspense } from "react";
-import SearchBar from "@/app/components/SearchBar";
-import ProductFilters from "@/app/components/ProductFilters";
 
 type DatabaseNumber = number | string;
 
@@ -37,84 +37,118 @@ type PriceCheckRow = {
   products: OneOrMany<ProductRow>;
 };
 
-function unwrapRelation<T>(relation: OneOrMany<T>): T | null {
-  if (!relation) {
-    return null;
-  }
-
-  return Array.isArray(relation) ? relation[0] ?? null : relation;
-}
-
-function toNullableNumber(
-  value: DatabaseNumber | null | undefined,
-): number | null {
-  if (value === null || value === undefined || value === "") {
-    return null;
-  }
-
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function calculateDisplayScore(
-  rawScore: number,
-  bestRawScore: number,
-): number {
-  if (rawScore <= 0 || bestRawScore <= 0) {
-    return 0;
-  }
-
-  return Math.max(
-    0,
-    Math.min(100, Math.round((bestRawScore / rawScore) * 100)),
-  );
-}
-
 type HomeProps = {
   searchParams: Promise<{
     q?: string | string[];
     retailer?: string | string[];
     brand?: string | string[];
     sort?: string | string[];
-    budget?: string | string[];
+    minPrice?: string | string[];
+    maxPrice?: string | string[];
   }>;
 };
 
-export default async function Home({ searchParams }: HomeProps) {
-  const resolvedSearchParams = await searchParams;
+function unwrapRelation<T>(
+  relation: OneOrMany<T>,
+): T | null {
+  if (!relation) {
+    return null;
+  }
+
+  return Array.isArray(relation)
+    ? relation[0] ?? null
+    : relation;
+}
+
+function toNullableNumber(
+  value:
+    | DatabaseNumber
+    | null
+    | undefined,
+): number | null {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed)
+    ? parsed
+    : null;
+}
+
+function calculateDisplayScore(
+  rawScore: number,
+  bestRawScore: number,
+): number {
+  if (
+    rawScore <= 0 ||
+    bestRawScore <= 0
+  ) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        (bestRawScore / rawScore) * 100,
+      ),
+    ),
+  );
+}
+
+export default async function Home({
+  searchParams,
+}: HomeProps) {
+  const resolvedSearchParams =
+    await searchParams;
 
   const query =
-    typeof resolvedSearchParams.q === "string"
-      ? resolvedSearchParams.q.trim().toLowerCase()
+    typeof resolvedSearchParams.q ===
+    "string"
+      ? resolvedSearchParams.q
+          .trim()
+          .toLowerCase()
       : "";
-      
-  const selectedRetailer =
-  typeof resolvedSearchParams.retailer === "string"
-    ? resolvedSearchParams.retailer
-    : "";
 
-const selectedBrand =
-  typeof resolvedSearchParams.brand === "string"
-    ? resolvedSearchParams.brand
-    : "";
-      
+  const selectedRetailer =
+    typeof resolvedSearchParams.retailer ===
+    "string"
+      ? resolvedSearchParams.retailer
+      : "";
+
+  const selectedBrand =
+    typeof resolvedSearchParams.brand ===
+    "string"
+      ? resolvedSearchParams.brand
+      : "";
+
   const selectedSort =
-    typeof resolvedSearchParams.sort === "string"
+    typeof resolvedSearchParams.sort ===
+    "string"
       ? resolvedSearchParams.sort
       : "value";
 
-
-  const budgetParam =
-    typeof resolvedSearchParams.budget === "string"
-      ? Number(resolvedSearchParams.budget)
+  const minPriceParam =
+    typeof resolvedSearchParams.minPrice ===
+    "string"
+      ? Number(
+          resolvedSearchParams.minPrice,
+        )
       : null;
 
-  const selectedBudget =
-    budgetParam !== null &&
-    Number.isFinite(budgetParam) &&
-    budgetParam > 0
-      ? budgetParam
+  const maxPriceParam =
+    typeof resolvedSearchParams.maxPrice ===
+    "string"
+      ? Number(
+          resolvedSearchParams.maxPrice,
+        )
       : null;
 
   const { data, error } = await supabase
@@ -147,16 +181,23 @@ const selectedBrand =
   if (error) {
     return (
       <main className="min-h-screen bg-[#fff8fa] p-8 text-base lowercase text-[#31262b]">
-        <p>error loading products: {error.message}</p>
+        <p>
+          error loading products:{" "}
+          {error.message}
+        </p>
       </main>
     );
   }
 
-  const priceChecks = (data ?? []) as unknown as PriceCheckRow[];
+  const priceChecks = (
+    data ?? []
+  ) as unknown as PriceCheckRow[];
 
   const ranked = priceChecks
     .flatMap((row) => {
-      const product = unwrapRelation(row.products);
+      const product = unwrapRelation(
+        row.products,
+      );
 
       if (
         !product ||
@@ -167,12 +208,23 @@ const selectedBrand =
         return [];
       }
 
-      const price = toNullableNumber(row.price);
-      const rating = toNullableNumber(product.rating);
-      const deliveryFee = toNullableNumber(row.delivery_fee);
-      const smallOrderCharge = toNullableNumber(
-        row.small_order_charge,
+      const price = toNullableNumber(
+        row.price,
       );
+
+      const rating = toNullableNumber(
+        product.rating,
+      );
+
+      const deliveryFee =
+        toNullableNumber(
+          row.delivery_fee,
+        );
+
+      const smallOrderCharge =
+        toNullableNumber(
+          row.small_order_charge,
+        );
 
       if (price === null) {
         return [];
@@ -180,32 +232,42 @@ const selectedBrand =
 
       const score = calculateScore({
         price,
-        rolls_per_pack: product.rolls_per_pack,
-        sheets_per_roll: product.sheets_per_roll,
+        rolls_per_pack:
+          product.rolls_per_pack,
+        sheets_per_roll:
+          product.sheets_per_roll,
         delivery_fee: deliveryFee,
-        small_order_charge: smallOrderCharge,
+        small_order_charge:
+          smallOrderCharge,
         rating,
-        review_count: product.review_count,
+        review_count:
+          product.review_count,
       });
 
       if (!score) {
         return [];
       }
 
-      const retailer = unwrapRelation(product.retailers);
+      const retailer = unwrapRelation(
+        product.retailers,
+      );
 
       return [
         {
           id: row.id,
-          productName: product.product_name,
+          productName:
+            product.product_name,
           brand: product.brand,
-          retailer: retailer?.name ?? "unknown",
+          retailer:
+            retailer?.name ?? "unknown",
           url: product.url,
           price,
           rating,
-          reviewCount: product.review_count,
+          reviewCount:
+            product.review_count,
           checkedAt: row.checked_at,
-          rollsPerPack: product.rolls_per_pack,
+          rollsPerPack:
+            product.rolls_per_pack,
           score,
         },
       ];
@@ -220,58 +282,120 @@ const selectedBrand =
       rank: index + 1,
     }));
 
-  const maxBudget = Math.max(
-    1,
-    Math.ceil(
-      Math.max(
-        ...ranked.map(
-          (row) => row.score.deliveredPrice,
-        ),
-      ),
-    ),
+  const deliveredPrices = ranked.map(
+    (row) =>
+      row.score.deliveredPrice,
   );
 
+  const priceRangeMin =
+    deliveredPrices.length > 0
+      ? Math.floor(
+          Math.min(...deliveredPrices),
+        )
+      : 0;
+
+  const priceRangeMax =
+    deliveredPrices.length > 0
+      ? Math.max(
+          priceRangeMin + 1,
+          Math.ceil(
+            Math.max(
+              ...deliveredPrices,
+            ),
+          ),
+        )
+      : 1;
+
+  const selectedMinPrice =
+    minPriceParam !== null &&
+    Number.isFinite(minPriceParam)
+      ? Math.max(
+          priceRangeMin,
+          Math.min(
+            minPriceParam,
+            priceRangeMax - 1,
+          ),
+        )
+      : priceRangeMin;
+
+  const selectedMaxPrice =
+    maxPriceParam !== null &&
+    Number.isFinite(maxPriceParam)
+      ? Math.min(
+          priceRangeMax,
+          Math.max(
+            maxPriceParam,
+            selectedMinPrice + 1,
+          ),
+        )
+      : priceRangeMax;
+
   const retailerOptions = Array.from(
-    new Set(ranked.map((row) => row.retailer)),
-  ).sort((a, b) => a.localeCompare(b));
+    new Set(
+      ranked.map(
+        (row) => row.retailer,
+      ),
+    ),
+  ).sort((a, b) =>
+    a.localeCompare(b),
+  );
 
   const brandOptions = Array.from(
     new Set(
       ranked
         .map((row) => row.brand)
-        .filter((brand): brand is string => Boolean(brand)),
+        .filter(
+          (
+            brand,
+          ): brand is string =>
+            Boolean(brand),
+        ),
     ),
-  ).sort((a, b) => a.localeCompare(b));
+  ).sort((a, b) =>
+    a.localeCompare(b),
+  );
 
-  const filteredRanked = ranked.filter((row) => {
-    const searchableText = [
-      row.productName,
-      row.brand,
-      row.retailer,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+  const filteredRanked =
+    ranked.filter((row) => {
+      const searchableText = [
+        row.productName,
+        row.brand,
+        row.retailer,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-    const matchesSearch =
-      !query || searchableText.includes(query);
+      const matchesSearch =
+        !query ||
+        searchableText.includes(query);
 
-    const matchesRetailer =
-      !selectedRetailer ||
-      row.retailer === selectedRetailer;
+      const matchesRetailer =
+        !selectedRetailer ||
+        row.retailer ===
+          selectedRetailer;
 
-    const matchesBrand =
-      !selectedBrand ||
-      row.brand === selectedBrand;
+      const matchesBrand =
+        !selectedBrand ||
+        row.brand === selectedBrand;
 
-    const matchesBudget =
-      selectedBudget === null ||
-      row.score.deliveredPrice <= selectedBudget;
+      const matchesPriceRange =
+        row.score.deliveredPrice >=
+          selectedMinPrice &&
+        row.score.deliveredPrice <=
+          selectedMaxPrice;
 
-    return (matchesSearch && matchesRetailer && matchesBrand && matchesBudget);
-  });
+      return (
+        matchesSearch &&
+        matchesRetailer &&
+        matchesBrand &&
+        matchesPriceRange
+      );
+    });
 
-  const sortedRanked = [...filteredRanked].sort((a, b) => {
+  const sortedRanked = [
+    ...filteredRanked,
+  ].sort((a, b) => {
     switch (selectedSort) {
       case "price-low":
         return (
@@ -310,8 +434,10 @@ const selectedBrand =
   });
 
   const bestProduct = ranked[0];
+
   const bestRawScore =
-    bestProduct?.score.adjustedValueScore ?? null;
+    bestProduct?.score
+      .adjustedValueScore ?? null;
 
   const checkedDates = ranked
     .map((row) => row.checkedAt)
@@ -320,22 +446,41 @@ const selectedBrand =
 
   const latestCheckedAt =
     checkedDates.length > 0
-      ? checkedDates[checkedDates.length - 1]
+      ? checkedDates[
+          checkedDates.length - 1
+        ]
       : null;
 
   const lastScanned = latestCheckedAt
-    ? new Intl.DateTimeFormat("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(latestCheckedAt))
+    ? new Intl.DateTimeFormat(
+        "en-GB",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      ).format(
+        new Date(latestCheckedAt),
+      )
     : "—";
 
   const retailerCount = new Set(
-    ranked.map((row) => row.retailer),
+    ranked.map(
+      (row) => row.retailer,
+    ),
   ).size;
+
+  const hasActiveCriteria = Boolean(
+    query ||
+      selectedRetailer ||
+      selectedBrand ||
+      selectedMinPrice >
+        priceRangeMin ||
+      selectedMaxPrice <
+        priceRangeMax,
+  );
 
   return (
     <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
@@ -347,7 +492,8 @@ const selectedBrand =
             </h1>
 
             <p className="mt-2 text-[#7a6970]">
-              find the best value, not just the lowest price
+              find the best value,
+              not just the lowest price
             </p>
           </div>
 
@@ -374,7 +520,8 @@ const selectedBrand =
             </h2>
 
             <p className="mt-4 text-3xl font-medium leading-tight text-[#6f5a62]">
-              {bestProduct?.retailer ?? "—"}
+              {bestProduct?.retailer ??
+                "—"}
             </p>
           </div>
 
@@ -399,15 +546,19 @@ const selectedBrand =
               </svg>
 
               {bestProduct
-                ? `£${bestProduct.score.deliveredPrice.toFixed(2)}`
+                ? `£${bestProduct.score.deliveredPrice.toFixed(
+                    2,
+                  )}`
                 : "—"}
             </span>
 
             <span className="inline-flex items-center gap-3 rounded-[12px] bg-[#fff1f5] px-4 py-2.5 text-base text-[#5f4b53]">
               <span className="font-medium">
-                {bestProduct && bestRawScore !== null
+                {bestProduct &&
+                bestRawScore !== null
                   ? `${calculateDisplayScore(
-                      bestProduct.score.adjustedValueScore,
+                      bestProduct.score
+                        .adjustedValueScore,
                       bestRawScore,
                     )}/100 value score`
                   : "—"}
@@ -444,11 +595,13 @@ const selectedBrand =
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M4 7.5v9l8 4 8-4v-9"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M12 11.5v9"
                   strokeLinecap="round"
@@ -485,16 +638,19 @@ const selectedBrand =
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M5 10v9h14v-9"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M9 19v-5h6v5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
+
                 <path
                   d="M4 10c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2"
                   strokeLinecap="round"
@@ -513,7 +669,8 @@ const selectedBrand =
               </p>
 
               <p className="mt-2 text-base text-[#806c74]">
-                delivery-friendly sources
+                delivery-friendly
+                sources
               </p>
             </div>
           </article>
@@ -544,7 +701,8 @@ const selectedBrand =
               </p>
 
               <p className="mt-2 text-base text-[#806c74]">
-                latest stored price check
+                latest stored price
+                check
               </p>
             </div>
           </article>
@@ -553,21 +711,27 @@ const selectedBrand =
         <section className="mb-5">
           <Suspense
             fallback={
-              <div className="h-[42px] rounded-xl bg-white" />
+              <div className="h-[72px] rounded-xl bg-white" />
             }
           >
             <ProductFilters
-              retailers={retailerOptions}
+              retailers={
+                retailerOptions
+              }
               brands={brandOptions}
-              maxBudget={maxBudget}
+              minPrice={priceRangeMin}
+              maxPrice={priceRangeMax}
             />
           </Suspense>
         </section>
 
         <div className="mb-3 px-1 text-sm text-[#806c74]">
-          {query
+          {hasActiveCriteria
             ? `${filteredRanked.length} ${
-                filteredRanked.length === 1 ? "result" : "results"
+                filteredRanked.length ===
+                1
+                  ? "result"
+                  : "results"
               }`
             : `${ranked.length} products`}
         </div>
@@ -585,6 +749,7 @@ const selectedBrand =
                 <col className="w-[110px]" />
                 <col className="w-[110px]" />
               </colgroup>
+
               <thead>
                 <tr className="border-b border-[#efced9] bg-[#fff5f8] text-left text-[#b52f61]">
                   <th className="px-5 py-5 text-base font-bold">
@@ -622,92 +787,113 @@ const selectedBrand =
               </thead>
 
               <tbody>
-                {sortedRanked.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
-                  >
-                    <td className="px-5 py-5">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffecef] text-base font-bold text-[#b83e69]">
-                        {row.rank}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-5">
-                      {row.url ? (
-                        <a
-                          href={row.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[17px] font-semibold text-[#31262b] hover:text-[#d94f7d]"
-                        >
-                          {row.productName}
-                        </a>
-                      ) : (
-                        <span className="block text-[17px] font-semibold leading-6 text-[#31262b] hover:text-[#d94f7d]">
-                          {row.productName}
+                {sortedRanked.map(
+                  (row) => (
+                    <tr
+                      key={row.id}
+                      className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
+                    >
+                      <td className="px-5 py-5">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffecef] text-base font-bold text-[#b83e69]">
+                          {row.rank}
                         </span>
-                      )}
+                      </td>
 
-                      <p className="mt-1 text-base text-[#806c74]">
-                        {row.rollsPerPack ?? "—"} rolls
-                      </p>
-                    </td>
-
-                    <td className="px-5 py-5 text-[#4e3d44]">
-                      {row.retailer}
-                    </td>
-
-                    <td className="px-5 py-5 text-center font-medium tabular-nums text-[#31262b]">
-                      £{row.score.deliveredPrice.toFixed(2)}
-                    </td>
-
-                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
-                      {row.score.totalSheets.toLocaleString("en-GB")}
-                    </td>
-
-                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
-                      {row.rating !== null ? (
-                        <span className="inline-flex items-center justify-center gap-1.5">
-                          <span>{row.rating}</span>
-
-                          <svg
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                            className="h-[18px] w-[18px] shrink-0 fill-[#f15f91]"
+                      <td className="px-5 py-5">
+                        {row.url ? (
+                          <a
+                            href={row.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[17px] font-semibold text-[#31262b] hover:text-[#d94f7d]"
                           >
-                            <path d="m12 2.8 2.77 5.61 6.19.9-4.48 4.36 1.06 6.16L12 16.92l-5.54 2.91 1.06-6.16-4.48-4.36 6.19-.9L12 2.8Z" />
-                          </svg>
+                            {
+                              row.productName
+                            }
+                          </a>
+                        ) : (
+                          <span className="block text-[17px] font-semibold leading-6 text-[#31262b] hover:text-[#d94f7d]">
+                            {
+                              row.productName
+                            }
+                          </span>
+                        )}
+
+                        <p className="mt-1 text-base text-[#806c74]">
+                          {row.rollsPerPack ??
+                            "—"}{" "}
+                          rolls
+                        </p>
+                      </td>
+
+                      <td className="px-5 py-5 text-[#4e3d44]">
+                        {row.retailer}
+                      </td>
+
+                      <td className="px-5 py-5 text-center font-medium tabular-nums text-[#31262b]">
+                        £
+                        {row.score.deliveredPrice.toFixed(
+                          2,
+                        )}
+                      </td>
+
+                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                        {row.score.totalSheets.toLocaleString(
+                          "en-GB",
+                        )}
+                      </td>
+
+                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                        {row.rating !==
+                        null ? (
+                          <span className="inline-flex items-center justify-center gap-1.5">
+                            <span>
+                              {row.rating}
+                            </span>
+
+                            <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                              className="h-[18px] w-[18px] shrink-0 fill-[#f15f91]"
+                            >
+                              <path d="m12 2.8 2.77 5.61 6.19.9-4.48 4.36 1.06 6.16L12 16.92l-5.54 2.91 1.06-6.16-4.48-4.36 6.19-.9L12 2.8Z" />
+                            </svg>
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+
+                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                        {row.reviewCount?.toLocaleString(
+                          "en-GB",
+                        ) ?? "—"}
+                      </td>
+
+                      <td className="px-5 py-5 text-center tabular-nums">
+                        <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
+                          {bestRawScore !==
+                          null
+                            ? calculateDisplayScore(
+                                row.score
+                                  .adjustedValueScore,
+                                bestRawScore,
+                              )
+                            : "—"}
                         </span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
+                      </td>
+                    </tr>
+                  ),
+                )}
 
-                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
-                      {row.reviewCount?.toLocaleString("en-GB") ?? "—"}
-                    </td>
-
-                    <td className="px-5 py-5 text-center tabular-nums">
-                      <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
-                        {bestRawScore !== null
-                          ? calculateDisplayScore(
-                              row.score.adjustedValueScore,
-                              bestRawScore,
-                            )
-                          : "—"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-
-                {filteredRanked.length === 0 && (
+                {sortedRanked.length ===
+                  0 && (
                   <tr>
                     <td
                       colSpan={8}
                       className="px-5 py-12 text-center text-base text-[#6f5a62]"
                     >
-                      {query
+                      {hasActiveCriteria
                         ? "no matching products found"
                         : "no eligible products found"}
                     </td>
