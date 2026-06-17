@@ -77,6 +77,7 @@ type HomeProps = {
     retailer?: string | string[];
     brand?: string | string[];
     sort?: string | string[];
+    budget?: string | string[];
   }>;
 };
 
@@ -102,6 +103,19 @@ const selectedBrand =
     typeof resolvedSearchParams.sort === "string"
       ? resolvedSearchParams.sort
       : "value";
+
+
+  const budgetParam =
+    typeof resolvedSearchParams.budget === "string"
+      ? Number(resolvedSearchParams.budget)
+      : null;
+
+  const selectedBudget =
+    budgetParam !== null &&
+    Number.isFinite(budgetParam) &&
+    budgetParam > 0
+      ? budgetParam
+      : null;
 
   const { data, error } = await supabase
     .from("price_checks")
@@ -206,6 +220,17 @@ const selectedBrand =
       rank: index + 1,
     }));
 
+  const maxBudget = Math.max(
+    1,
+    Math.ceil(
+      Math.max(
+        ...ranked.map(
+          (row) => row.score.deliveredPrice,
+        ),
+      ),
+    ),
+  );
+
   const retailerOptions = Array.from(
     new Set(ranked.map((row) => row.retailer)),
   ).sort((a, b) => a.localeCompare(b));
@@ -239,7 +264,11 @@ const selectedBrand =
       !selectedBrand ||
       row.brand === selectedBrand;
 
-    return matchesSearch && matchesRetailer && matchesBrand;
+    const matchesBudget =
+      selectedBudget === null ||
+      row.score.deliveredPrice <= selectedBudget;
+
+    return (matchesSearch && matchesRetailer && matchesBrand && matchesBudget);
   });
 
   const sortedRanked = [...filteredRanked].sort((a, b) => {
@@ -530,6 +559,7 @@ const selectedBrand =
             <ProductFilters
               retailers={retailerOptions}
               brands={brandOptions}
+              maxBudget={maxBudget}
             />
           </Suspense>
         </section>
