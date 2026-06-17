@@ -1,5 +1,7 @@
 import { calculateScore } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
+import { Suspense } from "react";
+import SearchBar from "@/app/components/SearchBar";
 
 type DatabaseNumber = number | string;
 
@@ -68,7 +70,20 @@ function calculateDisplayScore(
   );
 }
 
-export default async function Home() {
+type HomeProps = {
+  searchParams: Promise<{
+    q?: string | string[];
+  }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const query =
+    typeof resolvedSearchParams.q === "string"
+      ? resolvedSearchParams.q.trim().toLowerCase()
+      : "";  
+      
   const { data, error } = await supabase
     .from("price_checks")
     .select(`
@@ -166,7 +181,26 @@ export default async function Home() {
       (a, b) =>
         a.score.adjustedValueScore -
         b.score.adjustedValueScore,
-    );
+    )
+    .map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
+
+  const filteredRanked = query
+    ? ranked.filter((row) => {
+        const searchableText = [
+          row.productName,
+          row.brand,
+          row.retailer,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(query);
+      })
+    : ranked;
 
   const bestProduct = ranked[0];
   const bestRawScore =
@@ -264,17 +298,6 @@ export default async function Home() {
                       bestRawScore,
                     )}/100 value score`
                   : "—"}
-              </span>
-
-              <span
-                aria-hidden="true"
-                className="text-[#d8aeba]"
-              >
-                |
-              </span>
-
-              <span className="text-[#806c74]">
-                higher score = better
               </span>
             </span>
           </div>
@@ -414,6 +437,30 @@ export default async function Home() {
           </article>
         </section>
 
+        <section className="mb-5">
+          <Suspense
+            fallback={
+              <div className="h-[52px] rounded-[14px] border border-[#f2e4e9] bg-white" />
+            }
+          >
+            <SearchBar />
+          </Suspense>
+
+          <div className="mt-3 flex items-center justify-between px-1 text-sm text-[#806c74]">
+            <p>
+              {query
+                ? `${filteredRanked.length} ${
+                    filteredRanked.length === 1
+                      ? "result"
+                      : "results"
+                  }`
+                : `${ranked.length} products`}
+            </p>
+
+            {query && <p>searching for “{query}”</p>}
+          </div>
+        </section>
+
         <section className="overflow-hidden rounded-[15px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1050px] table-fixed border-collapse text-base leading-6">
@@ -464,14 +511,14 @@ export default async function Home() {
               </thead>
 
               <tbody>
-                {ranked.map((row, index) => (
+                {filteredRanked.map((row) => (
                   <tr
                     key={row.id}
                     className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
                   >
                     <td className="px-5 py-5">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffecef] text-base font-bold text-[#b83e69]">
-                        {index + 1}
+                        {row.rank}
                       </span>
                     </td>
 
@@ -543,13 +590,15 @@ export default async function Home() {
                   </tr>
                 ))}
 
-                {ranked.length === 0 && (
+                {filteredRanked.length === 0 && (
                   <tr>
                     <td
                       colSpan={8}
                       className="px-5 py-12 text-center text-base text-[#6f5a62]"
                     >
-                      no eligible products found
+                      {query
+                        ? "no matching products found"
+                        : "no eligible products found"}
                     </td>
                   </tr>
                 )}
