@@ -84,7 +84,7 @@ export default async function Home() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#fff8fa] p-8 lowercase text-[#31262b]">
+      <main className="min-h-screen bg-[#fff8fa] p-8 text-base lowercase text-[#31262b]">
         <p>error loading products: {error.message}</p>
       </main>
     );
@@ -108,7 +108,9 @@ export default async function Home() {
       const price = toNullableNumber(row.price);
       const rating = toNullableNumber(product.rating);
       const deliveryFee = toNullableNumber(row.delivery_fee);
-      const smallOrderCharge = toNullableNumber(row.small_order_charge);
+      const smallOrderCharge = toNullableNumber(
+        row.small_order_charge,
+      );
 
       if (price === null) {
         return [];
@@ -141,27 +143,36 @@ export default async function Home() {
           rating,
           reviewCount: product.review_count,
           checkedAt: row.checked_at,
+          rollsPerPack: product.rolls_per_pack,
           score,
         },
       ];
     })
     .sort(
       (a, b) =>
-        a.score.adjustedValueScore - b.score.adjustedValueScore,
+        a.score.adjustedValueScore -
+        b.score.adjustedValueScore,
     );
 
   const bestProduct = ranked[0];
 
-  const latestCheckedAt = ranked
+  const checkedDates = ranked
     .map((row) => row.checkedAt)
     .filter(Boolean)
-    .sort()
-    .at(-1);
+    .sort();
+
+  const latestCheckedAt =
+    checkedDates.length > 0
+      ? checkedDates[checkedDates.length - 1]
+      : null;
 
   const lastScanned = latestCheckedAt
     ? new Intl.DateTimeFormat("en-GB", {
-        dateStyle: "medium",
-        timeStyle: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       }).format(new Date(latestCheckedAt))
     : "—";
 
@@ -170,60 +181,93 @@ export default async function Home() {
   ).size;
 
   return (
-    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 lowercase sm:px-8 lg:px-12">
+    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <header className="mb-10">
           <h1 className="text-4xl font-semibold tracking-tight text-[#31262b]">
             bargain beacon
-            <span className="ml-1 text-[#fb99b9]">●</span>
+            <span
+              aria-hidden="true"
+              className="ml-1 text-[#fb99b9]"
+            >
+              ●
+            </span>
           </h1>
 
-          <p className="mt-2 text-[#7a6970]">
+          <p className="mt-2 text-base text-[#6f5a62]">
             find the best value, not just the lowest price
           </p>
         </header>
 
-        <section className="relative mb-7 overflow-hidden rounded-[28px] border border-[#f9c9d8] bg-white px-7 py-9 sm:px-10 lg:min-h-[310px] lg:px-12 lg:py-12">
-          <div className="relative z-10 max-w-2xl">
-            <p className="text-sm font-semibold text-[#f15f91]">
+        <section className="relative mb-7 overflow-hidden rounded-[20px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
+          <div className="relative z-10 max-w-3xl">
+            <p className="text-3xl font-semibold leading-tight text-[#f15f91]">
               best value today
             </p>
 
-            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[#31262b] sm:text-5xl">
-              {bestProduct?.productName ?? "no eligible products"}
+            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[#31262b] sm:text-5xl lg:text-6xl">
+              {bestProduct?.productName ??
+                "no eligible products"}
             </h2>
 
-            <p className="mt-3 text-xl text-[#7a6970]">
+            <p className="mt-4 text-3xl font-medium leading-tight text-[#6f5a62]">
               {bestProduct?.retailer ?? "—"}
             </p>
+          </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <span className="rounded-full bg-[#ffecef] px-4 py-2 font-medium text-[#8f244c]">
-                {bestProduct
-                  ? `£${bestProduct.price.toFixed(2)}`
-                  : "—"}
-              </span>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <span className="inline-flex min-w-[104px] items-center justify-center gap-2 rounded-[12px] bg-[#ffdbe7] px-5 py-2 text-base font-bold text-[#9f2f57]">
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0"
+              >
+                <path
+                  fill="#f15f91"
+                  d="M3 4.75C3 3.78 3.78 3 4.75 3h6.6c.46 0 .9.18 1.23.51l8.02 8.02a1.75 1.75 0 0 1 0 2.47L14 20.6a1.75 1.75 0 0 1-2.47 0L3.51 12.58A1.74 1.74 0 0 1 3 11.35v-6.6Z"
+                />
 
-              <span className="rounded-full bg-[#fff7fa] px-4 py-2 text-[#5f4b53]">
+                <circle
+                  cx="7.5"
+                  cy="7.5"
+                  r="1.55"
+                  fill="#fff1f5"
+                />
+              </svg>
+
+              {bestProduct
+                ? `£${bestProduct.price.toFixed(2)}`
+                : "—"}
+            </span>
+
+            <span className="inline-flex items-center gap-3 rounded-[12px] bg-[#fff1f5] px-4 py-2.5 text-base text-[#5f4b53]">
+              <span className="font-medium">
                 {bestProduct
                   ? `${bestProduct.score.adjustedValueScore.toFixed(3)} score`
                   : "—"}
               </span>
 
-              <span className="rounded-full bg-[#fff7fa] px-4 py-2 text-[#9a858d]">
+              <span
+                aria-hidden="true"
+                className="text-[#d8aeba]"
+              >
+                |
+              </span>
+
+              <span className="text-[#806c74]">
                 lower is better
               </span>
-            </div>
+            </span>
           </div>
 
-          <div className="pointer-events-none absolute -bottom-20 -right-10 hidden h-[390px] w-[390px] rounded-full bg-[#ffe6ef] lg:block">
-            <div className="absolute inset-20 flex items-center justify-center rounded-full bg-white/70 shadow-sm">
+          <div className="pointer-events-none absolute -bottom-16 -right-8 hidden h-[370px] w-[370px] rounded-full bg-[#fbe4ec] lg:block">
+            <div className="absolute inset-[74px] flex items-center justify-center rounded-full bg-white/80 shadow-[0_5px_18px_rgba(120,70,90,0.05)]">
               <div className="text-center">
                 <p className="text-5xl font-semibold text-[#fb99b9]">
                   3 ply
                 </p>
 
-                <p className="mt-2 text-sm text-[#7a6970]">
+                <p className="mt-2 text-base text-[#6f5a62]">
                   best-value pick
                 </p>
               </div>
@@ -232,74 +276,103 @@ export default async function Home() {
         </section>
 
         <section className="mb-8 grid gap-4 md:grid-cols-3">
-          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
               ◇
             </div>
 
-            <p className="text-sm text-[#7a6970]">
-              currently tracking
-            </p>
+            <div>
+              <p className="text-base font-bold text-[#f15f91]">
+                currently tracking
+              </p>
 
-            <p className="mt-1 text-2xl font-medium text-[#31262b]">
-              {ranked.length} products
-            </p>
+              <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+                {ranked.length} products
+              </p>
 
-            <p className="mt-2 text-sm text-[#9a858d]">
-              eligible 3-ply listings
-            </p>
+              <p className="mt-2 text-base text-[#806c74]">
+                eligible 3-ply listings
+              </p>
+            </div>
           </article>
 
-          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
               ⌂
             </div>
 
-            <p className="text-sm text-[#7a6970]">
-              scanning
-            </p>
+            <div>
+              <p className="text-base font-bold text-[#f15f91]">
+                scanning
+              </p>
 
-            <p className="mt-1 text-2xl font-medium text-[#31262b]">
-              {retailerCount} retailers
-            </p>
+              <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+                {retailerCount} retailers
+              </p>
 
-            <p className="mt-2 text-sm text-[#9a858d]">
-              delivery-friendly sources
-            </p>
+              <p className="mt-2 text-base text-[#806c74]">
+                delivery-friendly sources
+              </p>
+            </div>
           </article>
 
-          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
               ↻
             </div>
 
-            <p className="text-sm text-[#7a6970]">
-              last scanned
-            </p>
+            <div>
+              <p className="text-base font-bold text-[#f15f91]">
+                last scanned
+              </p>
 
-            <p className="mt-1 text-2xl font-medium text-[#31262b]">
-              {lastScanned}
-            </p>
+              <p className="mt-1 text-xl font-medium leading-snug text-[#31262b]">
+                {lastScanned}
+              </p>
 
-            <p className="mt-2 text-sm text-[#9a858d]">
-              latest stored price check
-            </p>
+              <p className="mt-2 text-base text-[#806c74]">
+                latest stored price check
+              </p>
+            </div>
           </article>
         </section>
 
-        <section className="overflow-hidden rounded-[24px] border border-[#f2e4e9] bg-white">
+        <section className="overflow-hidden rounded-[16px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-sm">
+            <table className="w-full min-w-[1050px] border-collapse text-base leading-6">
               <thead>
-                <tr className="border-b border-[#f2e4e9] text-left text-[#7a6970]">
-                  <th className="px-5 py-5 font-medium">rank</th>
-                  <th className="px-5 py-5 font-medium">product</th>
-                  <th className="px-5 py-5 font-medium">retailer</th>
-                  <th className="px-5 py-5 font-medium">price</th>
-                  <th className="px-5 py-5 font-medium">sheets</th>
-                  <th className="px-5 py-5 font-medium">rating</th>
-                  <th className="px-5 py-5 font-medium">reviews</th>
-                  <th className="px-5 py-5 font-medium">score</th>
+                <tr className="border-b border-[#f2e4e9] text-left text-[#f15f91]">
+                  <th className="px-5 py-5 text-base font-bold">
+                    rank
+                  </th>
+
+                  <th className="px-5 py-5 text-base font-bold">
+                    product
+                  </th>
+
+                  <th className="px-5 py-5 text-base font-bold">
+                    retailer
+                  </th>
+
+                  <th className="px-5 py-5 text-center text-base font-bold">
+                    price
+                  </th>
+
+                  <th className="px-5 py-5 text-center text-base font-bold">
+                    sheets
+                  </th>
+
+                  <th className="px-5 py-5 text-center text-base font-bold">
+                    rating
+                  </th>
+
+                  <th className="px-5 py-5 text-center text-base font-bold">
+                    reviews
+                  </th>
+
+                  <th className="px-5 py-5 text-center text-base font-bold">
+                    score
+                  </th>
                 </tr>
               </thead>
 
@@ -310,7 +383,7 @@ export default async function Home() {
                     className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
                   >
                     <td className="px-5 py-5">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ffecef] font-medium text-[#b83e69]">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffecef] text-base font-bold text-[#b83e69]">
                         {index + 1}
                       </span>
                     </td>
@@ -321,18 +394,18 @@ export default async function Home() {
                           href={row.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="font-medium text-[#31262b] hover:text-[#d94f7d]"
+                          className="text-[17px] font-semibold text-[#31262b] hover:text-[#d94f7d]"
                         >
                           {row.productName}
                         </a>
                       ) : (
-                        <span className="font-medium text-[#31262b]">
+                        <span className="text-[17px] font-semibold text-[#31262b]">
                           {row.productName}
                         </span>
                       )}
 
-                      <p className="mt-1 text-xs text-[#9a858d]">
-                        {row.brand ?? "unknown brand"} · 3 ply
+                      <p className="mt-1 text-base text-[#806c74]">
+                        {row.rollsPerPack ?? "—"} rolls
                       </p>
                     </td>
 
@@ -340,25 +413,38 @@ export default async function Home() {
                       {row.retailer}
                     </td>
 
-                    <td className="px-5 py-5 font-medium text-[#31262b]">
+                    <td className="px-5 py-5 text-center font-medium text-[#31262b]">
                       £{row.price.toFixed(2)}
                     </td>
 
-                    <td className="px-5 py-5 text-[#4e3d44]">
+                    <td className="px-5 py-5 text-center text-[#4e3d44]">
                       {row.score.totalSheets.toLocaleString("en-GB")}
                     </td>
 
-                    <td className="px-5 py-5 text-[#4e3d44]">
-                      {row.rating ?? "—"}
+                    <td className="px-5 py-5 text-center text-[#4e3d44]">
+                      {row.rating !== null ? (
+                        <span className="inline-flex items-center justify-center gap-1.5">
+                          <span>{row.rating}</span>
+
+                          <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            className="h-[18px] w-[18px] shrink-0 fill-[#f15f91]"
+                          >
+                            <path d="m12 2.8 2.77 5.61 6.19.9-4.48 4.36 1.06 6.16L12 16.92l-5.54 2.91 1.06-6.16-4.48-4.36 6.19-.9L12 2.8Z" />
+                          </svg>
+                        </span>
+                      ) : (
+                        "—"
+                      )}
                     </td>
 
-                    <td className="px-5 py-5 text-[#4e3d44]">
-                      {row.reviewCount?.toLocaleString("en-GB") ??
-                        "—"}
+                    <td className="px-5 py-5 text-center text-[#4e3d44]">
+                      {row.reviewCount?.toLocaleString("en-GB") ?? "—"}
                     </td>
 
-                    <td className="px-5 py-5">
-                      <span className="rounded-full bg-[#ffecef] px-4 py-2 font-semibold text-[#9f2f57]">
+                    <td className="px-5 py-5 text-center">
+                      <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
                         {row.score.adjustedValueScore.toFixed(3)}
                       </span>
                     </td>
@@ -369,7 +455,7 @@ export default async function Home() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-5 py-12 text-center text-[#7a6970]"
+                      className="px-5 py-12 text-center text-base text-[#6f5a62]"
                     >
                       no eligible products found
                     </td>
