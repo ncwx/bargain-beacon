@@ -1,30 +1,58 @@
-import { supabase } from "@/lib/supabase";
 import { calculateScore } from "@/lib/scoring";
+import { supabase } from "@/lib/supabase";
+
+type DatabaseNumber = number | string;
+
+type OneOrMany<T> = T | T[] | null;
+
+type RetailerRow = {
+  name: string;
+};
+
+type ProductRow = {
+  id: string;
+  product_name: string;
+  brand: string | null;
+  url: string | null;
+  ply: number | null;
+  rolls_per_pack: number | null;
+  sheets_per_roll: number | null;
+  total_sheets: number | null;
+  rating: DatabaseNumber | null;
+  review_count: number | null;
+  retailers: OneOrMany<RetailerRow>;
+};
 
 type PriceCheckRow = {
   id: string;
-  price: number;
-  delivery_fee: number | null;
-  small_order_charge: number | null;
+  price: DatabaseNumber;
+  delivery_fee: DatabaseNumber | null;
+  small_order_charge: DatabaseNumber | null;
   in_stock: boolean | null;
   delivery_available: boolean | null;
   checked_at: string;
-  products: {
-    id: string;
-    product_name: string;
-    brand: string | null;
-    url: string | null;
-    ply: number | null;
-    rolls_per_pack: number | null;
-    sheets_per_roll: number | null;
-    total_sheets: number | null;
-    rating: number | null;
-    review_count: number | null;
-    retailers: {
-      name: string;
-    } | null;
-  } | null;
+  products: OneOrMany<ProductRow>;
 };
+
+function unwrapRelation<T>(relation: OneOrMany<T>): T | null {
+  if (!relation) {
+    return null;
+  }
+
+  return Array.isArray(relation) ? relation[0] ?? null : relation;
+}
+
+function toNullableNumber(
+  value: DatabaseNumber | null | undefined,
+): number | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : null;
+}
 
 export default async function Home() {
   const { data, error } = await supabase
@@ -55,136 +83,302 @@ export default async function Home() {
     `);
 
   if (error) {
-    return <main className="p-8">error: {error.message}</main>;
+    return (
+      <main className="min-h-screen bg-[#fff8fa] p-8 lowercase text-[#31262b]">
+        <p>error loading products: {error.message}</p>
+      </main>
+    );
   }
 
-  const ranked = ((data ?? []) as PriceCheckRow[])
-    .filter((row) => row.products !== null)
-    .filter((row) => row.products?.ply === 3)
-    .filter((row) => row.in_stock === true)
-    .filter((row) => row.delivery_available === true)
-    .map((row) => {
-      const product = row.products!;
+  const priceChecks = (data ?? []) as unknown as PriceCheckRow[];
+
+  const ranked = priceChecks
+    .flatMap((row) => {
+      const product = unwrapRelation(row.products);
+
+      if (
+        !product ||
+        product.ply !== 3 ||
+        row.in_stock !== true ||
+        row.delivery_available !== true
+      ) {
+        return [];
+      }
+
+      const price = toNullableNumber(row.price);
+      const rating = toNullableNumber(product.rating);
+      const deliveryFee = toNullableNumber(row.delivery_fee);
+      const smallOrderCharge = toNullableNumber(row.small_order_charge);
+
+      if (price === null) {
+        return [];
+      }
 
       const score = calculateScore({
-        price: Number(row.price),
+        price,
         rolls_per_pack: product.rolls_per_pack,
         sheets_per_roll: product.sheets_per_roll,
-        delivery_fee: row.delivery_fee,
-        small_order_charge: row.small_order_charge,
-        rating: product.rating,
+        delivery_fee: deliveryFee,
+        small_order_charge: smallOrderCharge,
+        rating,
         review_count: product.review_count,
       });
 
-      return {
-        id: row.id,
-        productName: product.product_name,
-        brand: product.brand,
-        retailer: product.retailers?.name ?? "unknown",
-        url: product.url,
-        price: Number(row.price),
-        rating: product.rating,
-        reviewCount: product.review_count,
-        score,
-      };
+      if (!score) {
+        return [];
+      }
+
+      const retailer = unwrapRelation(product.retailers);
+
+      return [
+        {
+          id: row.id,
+          productName: product.product_name,
+          brand: product.brand,
+          retailer: retailer?.name ?? "unknown",
+          url: product.url,
+          price,
+          rating,
+          reviewCount: product.review_count,
+          checkedAt: row.checked_at,
+          score,
+        },
+      ];
     })
-    .filter((row) => row.score !== null)
-    .sort((a, b) => a.score!.adjustedValueScore - b.score!.adjustedValueScore);
+    .sort(
+      (a, b) =>
+        a.score.adjustedValueScore - b.score.adjustedValueScore,
+    );
+
+  const bestProduct = ranked[0];
+
+  const latestCheckedAt = ranked
+    .map((row) => row.checkedAt)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+
+  const lastScanned = latestCheckedAt
+    ? new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date(latestCheckedAt))
+    : "—";
+
+  const retailerCount = new Set(
+    ranked.map((row) => row.retailer),
+  ).size;
 
   return (
-    <main className="min-h-screen bg-[#fff7fa] p-8 lowercase">
+    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 lowercase sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-semibold tracking-tight text-[#3A2A2F]">
+        <header className="mb-10">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#31262b]">
             bargain beacon
+            <span className="ml-1 text-[#fb99b9]">●</span>
           </h1>
-          <p className="mt-2 text-[#6b4b57]">
-            best-value delivered 3-ply toilet paper tracker.
+
+          <p className="mt-2 text-[#7a6970]">
+            find the best value, not just the lowest price
           </p>
-        </div>
+        </header>
 
-        <div className="mb-6 grid gap-4 md:grid-cols-4">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-[#6b4b57]">eligible products</p>
-            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
-              {ranked.length}
+        <section className="relative mb-7 overflow-hidden rounded-[28px] border border-[#f9c9d8] bg-white px-7 py-9 sm:px-10 lg:min-h-[310px] lg:px-12 lg:py-12">
+          <div className="relative z-10 max-w-2xl">
+            <p className="text-sm font-semibold text-[#f15f91]">
+              best value today
             </p>
+
+            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[#31262b] sm:text-5xl">
+              {bestProduct?.productName ?? "no eligible products"}
+            </h2>
+
+            <p className="mt-3 text-xl text-[#7a6970]">
+              {bestProduct?.retailer ?? "—"}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <span className="rounded-full bg-[#ffecef] px-4 py-2 font-medium text-[#8f244c]">
+                {bestProduct
+                  ? `£${bestProduct.price.toFixed(2)}`
+                  : "—"}
+              </span>
+
+              <span className="rounded-full bg-[#fff7fa] px-4 py-2 text-[#5f4b53]">
+                {bestProduct
+                  ? `${bestProduct.score.adjustedValueScore.toFixed(3)} score`
+                  : "—"}
+              </span>
+
+              <span className="rounded-full bg-[#fff7fa] px-4 py-2 text-[#9a858d]">
+                lower is better
+              </span>
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-[#6b4b57]">retailers</p>
-            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
-              {new Set(ranked.map((row) => row.retailer)).size}
-            </p>
-          </div>
+          <div className="pointer-events-none absolute -bottom-20 -right-10 hidden h-[390px] w-[390px] rounded-full bg-[#ffe6ef] lg:block">
+            <div className="absolute inset-20 flex items-center justify-center rounded-full bg-white/70 shadow-sm">
+              <div className="text-center">
+                <p className="text-5xl font-semibold text-[#fb99b9]">
+                  3 ply
+                </p>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-[#6b4b57]">best value</p>
-            <p className="mt-2 text-lg font-semibold text-[#3A2A2F]">
-              {ranked[0]?.brand ?? "—"}
-            </p>
-            <p className="mt-1 text-xs text-[#6b4b57]">
-              {ranked[0]?.retailer ?? "—"}
-            </p>
+                <p className="mt-2 text-sm text-[#7a6970]">
+                  best-value pick
+                </p>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-[#6b4b57]">best score</p>
-            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
-              {ranked[0]?.score?.adjustedValueScore.toFixed(3) ?? "—"}
+        <section className="mb-8 grid gap-4 md:grid-cols-3">
+          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+              ◇
+            </div>
+
+            <p className="text-sm text-[#7a6970]">
+              currently tracking
             </p>
-          </div>
-        </div>
 
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-[#FB99B9] text-left text-[#3A2A2F]">
-                <th className="p-3">rank</th>
-                <th className="p-3">product</th>
-                <th className="p-3">retailer</th>
-                <th className="p-3">brand</th>
-                <th className="p-3">price</th>
-                <th className="p-3">total sheets</th>
-                <th className="p-3">rating</th>
-                <th className="p-3">reviews</th>
-                <th className="p-3">score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ranked.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#FFECEF] odd:bg-[#FFECEF]"
-                >
-                  <td className="p-3 font-medium">{index + 1}</td>
-                  <td className="p-3">
-                    {row.url ? (
-                      <a
-                        href={row.url}
-                        target="_blank"
-                        className="font-medium underline"
-                      >
-                        {row.productName}
-                      </a>
-                    ) : (
-                      row.productName
-                    )}
-                  </td>
-                  <td className="p-3">{row.retailer}</td>
-                  <td className="p-3">{row.brand ?? "—"}</td>
-                  <td className="p-3">£{row.price.toFixed(2)}</td>
-                  <td className="p-3">{row.score!.totalSheets}</td>
-                  <td className="p-3">{row.rating ?? "—"}</td>
-                  <td className="p-3">{row.reviewCount ?? "—"}</td>
-                  <td className="p-3 font-semibold">
-                    {row.score!.adjustedValueScore.toFixed(3)}
-                  </td>
+            <p className="mt-1 text-2xl font-medium text-[#31262b]">
+              {ranked.length} products
+            </p>
+
+            <p className="mt-2 text-sm text-[#9a858d]">
+              eligible 3-ply listings
+            </p>
+          </article>
+
+          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+              ⌂
+            </div>
+
+            <p className="text-sm text-[#7a6970]">
+              scanning
+            </p>
+
+            <p className="mt-1 text-2xl font-medium text-[#31262b]">
+              {retailerCount} retailers
+            </p>
+
+            <p className="mt-2 text-sm text-[#9a858d]">
+              delivery-friendly sources
+            </p>
+          </article>
+
+          <article className="rounded-[22px] border border-[#f2e4e9] bg-white p-6">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#ffecef] text-xl text-[#d94f7d]">
+              ↻
+            </div>
+
+            <p className="text-sm text-[#7a6970]">
+              last scanned
+            </p>
+
+            <p className="mt-1 text-2xl font-medium text-[#31262b]">
+              {lastScanned}
+            </p>
+
+            <p className="mt-2 text-sm text-[#9a858d]">
+              latest stored price check
+            </p>
+          </article>
+        </section>
+
+        <section className="overflow-hidden rounded-[24px] border border-[#f2e4e9] bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-[#f2e4e9] text-left text-[#7a6970]">
+                  <th className="px-5 py-5 font-medium">rank</th>
+                  <th className="px-5 py-5 font-medium">product</th>
+                  <th className="px-5 py-5 font-medium">retailer</th>
+                  <th className="px-5 py-5 font-medium">price</th>
+                  <th className="px-5 py-5 font-medium">sheets</th>
+                  <th className="px-5 py-5 font-medium">rating</th>
+                  <th className="px-5 py-5 font-medium">reviews</th>
+                  <th className="px-5 py-5 font-medium">score</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {ranked.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
+                  >
+                    <td className="px-5 py-5">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ffecef] font-medium text-[#b83e69]">
+                        {index + 1}
+                      </span>
+                    </td>
+
+                    <td className="px-5 py-5">
+                      {row.url ? (
+                        <a
+                          href={row.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-[#31262b] hover:text-[#d94f7d]"
+                        >
+                          {row.productName}
+                        </a>
+                      ) : (
+                        <span className="font-medium text-[#31262b]">
+                          {row.productName}
+                        </span>
+                      )}
+
+                      <p className="mt-1 text-xs text-[#9a858d]">
+                        {row.brand ?? "unknown brand"} · 3 ply
+                      </p>
+                    </td>
+
+                    <td className="px-5 py-5 text-[#4e3d44]">
+                      {row.retailer}
+                    </td>
+
+                    <td className="px-5 py-5 font-medium text-[#31262b]">
+                      £{row.price.toFixed(2)}
+                    </td>
+
+                    <td className="px-5 py-5 text-[#4e3d44]">
+                      {row.score.totalSheets.toLocaleString("en-GB")}
+                    </td>
+
+                    <td className="px-5 py-5 text-[#4e3d44]">
+                      {row.rating ?? "—"}
+                    </td>
+
+                    <td className="px-5 py-5 text-[#4e3d44]">
+                      {row.reviewCount?.toLocaleString("en-GB") ??
+                        "—"}
+                    </td>
+
+                    <td className="px-5 py-5">
+                      <span className="rounded-full bg-[#ffecef] px-4 py-2 font-semibold text-[#9f2f57]">
+                        {row.score.adjustedValueScore.toFixed(3)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+
+                {ranked.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="px-5 py-12 text-center text-[#7a6970]"
+                    >
+                      no eligible products found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </main>
   );
