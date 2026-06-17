@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import {
   usePathname,
   useRouter,
@@ -15,6 +12,7 @@ type ProductFiltersProps = {
   brands: string[];
   minPrice: number;
   maxPrice: number;
+  resultLabel: string;
 };
 
 type FilterName =
@@ -32,6 +30,7 @@ export default function ProductFilters({
   brands,
   minPrice,
   maxPrice,
+  resultLabel,
 }: ProductFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -328,83 +327,108 @@ export default function ProductFilters({
     "w-full rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 text-base text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
 
   const sortSelectClassName =
-    "min-h-[44px] min-w-[190px] rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
+    "min-h-[44px] min-w-[190px] appearance-none rounded-xl border border-[#f2e4e9] bg-white py-2.5 pl-4 pr-12 text-sm text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
 
   return (
     <>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <button
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls="product-filter-drawer"
-          onClick={() => setIsOpen(true)}
-          className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm font-semibold text-[#31262b] transition hover:border-[#fb99b9] focus:outline-none focus:ring-4 focus:ring-[#ffecef] sm:w-auto"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
+        <div className="flex w-full items-center gap-3 sm:w-auto">
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls="product-filter-drawer"
+            onClick={() =>
+              setIsOpen(true)
+            }
+            className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm font-semibold text-[#31262b] transition hover:border-[#fb99b9] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
           >
-            <path d="M4 6h16" />
-            <path d="M4 12h16" />
-            <path d="M4 18h16" />
-            <path d="M9 4v4" />
-            <path d="M15 10v4" />
-            <path d="M11 16v4" />
-          </svg>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            >
+              <path d="M4 6h16" />
+              <path d="M4 12h16" />
+              <path d="M4 18h16" />
+              <path d="M9 4v4" />
+              <path d="M15 10v4" />
+              <path d="M11 16v4" />
+            </svg>
 
-          <span>filters</span>
+            <span>filters</span>
 
-          {activeFilterCount > 0 && (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fb99b9] px-1.5 text-xs font-bold text-[#31262b]">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
+            {activeFilterCount > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fb99b9] px-1.5 text-xs font-bold text-[#31262b]">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          <span className="whitespace-nowrap text-sm font-medium text-[#806c74]">
+            {resultLabel}
+          </span>
+        </div>
 
         <div className="flex w-full items-center gap-3 sm:w-auto">
           <label
-            className="text-sm font-medium text-[#806c74]"
+            className="shrink-0 text-sm font-medium text-[#806c74]"
             htmlFor="sort-products"
           >
             sort by
           </label>
 
-          <select
-            id="sort-products"
-            value={selectedSort}
-            onChange={(event) =>
-              updateFilter(
-                "sort",
-                event.target.value,
-              )
-            }
-            className={`${sortSelectClassName} flex-1 sm:flex-none`}
-          >
-            <option value="value">
-              best value
-            </option>
+          <div className="relative flex-1 sm:flex-none font-bold text-[#31262b]">
+            <select
+              id="sort-products"
+              value={selectedSort}
+              onChange={(event) =>
+                updateFilter(
+                  "sort",
+                  event.target.value,
+                )
+              }
+              className={`${sortSelectClassName} w-full`}
+            >
+              <option value="value">
+                best value
+              </option>
 
-            <option value="price-low">
-              lowest delivered price
-            </option>
+              <option value="price-low">
+                lowest delivered price
+              </option>
 
-            <option value="sheets-high">
-              most sheets
-            </option>
+              <option value="sheets-high">
+                most sheets
+              </option>
 
-            <option value="rating-high">
-              highest rated
-            </option>
+              <option value="rating-high">
+                highest rated
+              </option>
 
-            <option value="reviews-high">
-              most reviewed
-            </option>
-          </select>
+              <option value="reviews-high">
+                most reviewed
+              </option>
+            </select>
+
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              fill="none"
+              className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#31262b]"
+            >
+              <path
+                d="m5 7.5 5 5 5-5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -736,8 +760,13 @@ export default function ProductFilters({
                 </div>
 
                 <div className="mt-2 flex justify-between text-xs text-[#806c74]">
-                  <span>£{safeMinPrice}</span>
-                  <span>£{safeMaxPrice}</span>
+                  <span>
+                    £{safeMinPrice}
+                  </span>
+
+                  <span>
+                    £{safeMaxPrice}
+                  </span>
                 </div>
               </section>
             </div>

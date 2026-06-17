@@ -510,6 +510,14 @@ export default async function Home({
         priceRangeMax,
   );
 
+  const resultLabel = hasActiveCriteria
+    ? `${filteredRanked.length} ${
+        filteredRanked.length === 1
+          ? "result"
+          : "results"
+      }`
+    : `${ranked.length} products`;
+
   return (
     <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
@@ -749,20 +757,10 @@ export default async function Home({
               brands={brandOptions}
               minPrice={priceRangeMin}
               maxPrice={priceRangeMax}
+              resultLabel={resultLabel}
             />
           </Suspense>
         </section>
-
-        <div className="mb-3 px-1 text-sm text-[#806c74]">
-          {hasActiveCriteria
-            ? `${filteredRanked.length} ${
-                filteredRanked.length ===
-                1
-                  ? "result"
-                  : "results"
-              }`
-            : `${ranked.length} products`}
-        </div>
 
         <section className="overflow-hidden rounded-[15px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
           <div className="overflow-x-auto">
