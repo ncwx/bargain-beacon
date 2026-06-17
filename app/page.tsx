@@ -233,20 +233,26 @@ export default async function Home({ searchParams }: HomeProps) {
   return (
     <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-10">
-          <h1 className="text-5xl font-semibold tracking-tight text-[#31262b]">
-            bargain beacon
-            <span
-              aria-hidden="true"
-              className="ml-1 text-[#fb99b9]"
-            >
-              ●
-            </span>
-          </h1>
+        <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h1 className="text-4xl font-semibold tracking-tight text-[#31262b]">
+              bargain beacon
+            </h1>
 
-          <p className="mt-2 text-lg text-[#6f5a62]">
-            find the best value, not just the lowest price
-          </p>
+            <p className="mt-2 text-[#7a6970]">
+              find the best value, not just the lowest price
+            </p>
+          </div>
+
+          <div className="w-full md:max-w-[380px]">
+            <Suspense
+              fallback={
+                <div className="h-[52px] rounded-[14px] border border-[#f2e4e9] bg-white" />
+              }
+            >
+              <SearchBar />
+            </Suspense>
+          </div>
         </header>
 
         <section className="relative mb-7 overflow-hidden rounded-[15px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
@@ -345,7 +351,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#b52f61]">
+              <p className="text-lg font-bold text-[#b52f61]">
                 currently comparing
               </p>
 
@@ -391,7 +397,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#b52f61]">
+              <p className="text-lg font-bold text-[#b52f61]">
                 scanning
               </p>
 
@@ -422,7 +428,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#b52f61]">
+              <p className="text-lg font-bold text-[#b52f61]">
                 last scanned
               </p>
 
@@ -437,29 +443,13 @@ export default async function Home({ searchParams }: HomeProps) {
           </article>
         </section>
 
-        <section className="mb-5">
-          <Suspense
-            fallback={
-              <div className="h-[52px] rounded-[14px] border border-[#f2e4e9] bg-white" />
-            }
-          >
-            <SearchBar />
-          </Suspense>
-
-          <div className="mt-3 flex items-center justify-between px-1 text-sm text-[#806c74]">
-            <p>
-              {query
-                ? `${filteredRanked.length} ${
-                    filteredRanked.length === 1
-                      ? "result"
-                      : "results"
-                  }`
-                : `${ranked.length} products`}
-            </p>
-
-            {query && <p>searching for “{query}”</p>}
-          </div>
-        </section>
+        <div className="mb-3 px-1 text-sm text-[#806c74]">
+          {query
+            ? `${filteredRanked.length} ${
+                filteredRanked.length === 1 ? "result" : "results"
+              }`
+            : `${ranked.length} products`}
+        </div>
 
         <section className="overflow-hidden rounded-[15px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
           <div className="overflow-x-auto">
