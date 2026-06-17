@@ -21,11 +21,14 @@ export default function ProductFilters({
 
   const selectedRetailer = searchParams.get("retailer") ?? "";
   const selectedBrand = searchParams.get("brand") ?? "";
+  const selectedSort = searchParams.get("sort") ?? "value";
 
-  function updateFilter(name: "retailer" | "brand", value: string) {
+  function updateFilter(name: "retailer" | "brand" | "sort", value: string) {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value) {
+    if (name === "sort" && value === "value") {
+      params.delete("sort");
+    } else if (value) {
       params.set(name, value);
     } else {
       params.delete(name);
@@ -109,6 +112,31 @@ export default function ProductFilters({
             {brand.toLowerCase()}
           </option>
         ))}
+      </select>
+
+      <label className="sr-only" htmlFor="sort-products">
+        sort products
+      </label>
+      
+      <select
+        id="sort-products"
+        value={selectedSort}
+        onChange={(event) =>
+            updateFilter("sort", event.target.value)
+        }
+        className="
+            min-w-[190px] rounded-xl border border-[#f2e4e9]
+            bg-white px-4 py-2.5 text-sm text-[#31262b]
+            outline-none transition
+            focus:border-[#fb99b9]
+            focus:ring-4 focus:ring-[#ffecef]
+        "
+      >
+        <option value="value">best value</option>
+        <option value="price-low">lowest delivered price</option>
+        <option value="sheets-high">most sheets</option>
+        <option value="rating-high">highest rated</option>
+        <option value="reviews-high">most reviewed</option>
       </select>
 
       {hasActiveFilters && (

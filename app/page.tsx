@@ -76,6 +76,7 @@ type HomeProps = {
     q?: string | string[];
     retailer?: string | string[];
     brand?: string | string[];
+    sort?: string | string[];
   }>;
 };
 
@@ -97,6 +98,11 @@ const selectedBrand =
     ? resolvedSearchParams.brand
     : "";
       
+  const selectedSort =
+    typeof resolvedSearchParams.sort === "string"
+      ? resolvedSearchParams.sort
+      : "value";
+
   const { data, error } = await supabase
     .from("price_checks")
     .select(`
@@ -234,6 +240,44 @@ const selectedBrand =
       row.brand === selectedBrand;
 
     return matchesSearch && matchesRetailer && matchesBrand;
+  });
+
+  const sortedRanked = [...filteredRanked].sort((a, b) => {
+    switch (selectedSort) {
+      case "price-low":
+        return (
+          a.score.deliveredPrice -
+            b.score.deliveredPrice ||
+          a.rank - b.rank
+        );
+
+      case "sheets-high":
+        return (
+          b.score.totalSheets -
+            a.score.totalSheets ||
+          a.rank - b.rank
+        );
+
+      case "rating-high":
+        return (
+          (b.rating ?? -1) -
+            (a.rating ?? -1) ||
+          (b.reviewCount ?? 0) -
+            (a.reviewCount ?? 0) ||
+          a.rank - b.rank
+        );
+
+      case "reviews-high":
+        return (
+          (b.reviewCount ?? -1) -
+            (a.reviewCount ?? -1) ||
+          a.rank - b.rank
+        );
+
+      case "value":
+      default:
+        return a.rank - b.rank;
+    }
   });
 
   const bestProduct = ranked[0];
@@ -514,7 +558,7 @@ const selectedBrand =
               <thead>
                 <tr className="border-b border-[#efced9] bg-[#fff5f8] text-left text-[#b52f61]">
                   <th className="px-5 py-5 text-base font-bold">
-                    rank
+                    value rank
                   </th>
 
                   <th className="px-5 py-5 text-base font-bold">
@@ -548,7 +592,7 @@ const selectedBrand =
               </thead>
 
               <tbody>
-                {filteredRanked.map((row) => (
+                {sortedRanked.map((row) => (
                   <tr
                     key={row.id}
                     className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
