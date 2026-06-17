@@ -2,6 +2,7 @@ import { calculateScore } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
 import { Suspense } from "react";
 import SearchBar from "@/app/components/SearchBar";
+import ProductFilters from "@/app/components/ProductFilters";
 
 type DatabaseNumber = number | string;
 
@@ -73,6 +74,8 @@ function calculateDisplayScore(
 type HomeProps = {
   searchParams: Promise<{
     q?: string | string[];
+    retailer?: string | string[];
+    brand?: string | string[];
   }>;
 };
 
@@ -82,7 +85,17 @@ export default async function Home({ searchParams }: HomeProps) {
   const query =
     typeof resolvedSearchParams.q === "string"
       ? resolvedSearchParams.q.trim().toLowerCase()
-      : "";  
+      : "";
+      
+  const selectedRetailer =
+  typeof resolvedSearchParams.retailer === "string"
+    ? resolvedSearchParams.retailer
+    : "";
+
+const selectedBrand =
+  typeof resolvedSearchParams.brand === "string"
+    ? resolvedSearchParams.brand
+    : "";
       
   const { data, error } = await supabase
     .from("price_checks")
@@ -187,20 +200,41 @@ export default async function Home({ searchParams }: HomeProps) {
       rank: index + 1,
     }));
 
-  const filteredRanked = query
-    ? ranked.filter((row) => {
-        const searchableText = [
-          row.productName,
-          row.brand,
-          row.retailer,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
+  const retailerOptions = Array.from(
+    new Set(ranked.map((row) => row.retailer)),
+  ).sort((a, b) => a.localeCompare(b));
 
-        return searchableText.includes(query);
-      })
-    : ranked;
+  const brandOptions = Array.from(
+    new Set(
+      ranked
+        .map((row) => row.brand)
+        .filter((brand): brand is string => Boolean(brand)),
+    ),
+  ).sort((a, b) => a.localeCompare(b));
+
+  const filteredRanked = ranked.filter((row) => {
+    const searchableText = [
+      row.productName,
+      row.brand,
+      row.retailer,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch =
+      !query || searchableText.includes(query);
+
+    const matchesRetailer =
+      !selectedRetailer ||
+      row.retailer === selectedRetailer;
+
+    const matchesBrand =
+      !selectedBrand ||
+      row.brand === selectedBrand;
+
+    return matchesSearch && matchesRetailer && matchesBrand;
+  });
 
   const bestProduct = ranked[0];
   const bestRawScore =
@@ -441,6 +475,19 @@ export default async function Home({ searchParams }: HomeProps) {
               </p>
             </div>
           </article>
+        </section>
+
+        <section className="mb-5">
+          <Suspense
+            fallback={
+              <div className="h-[42px] rounded-xl bg-white" />
+            }
+          >
+            <ProductFilters
+              retailers={retailerOptions}
+              brands={brandOptions}
+            />
+          </Suspense>
         </section>
 
         <div className="mb-3 px-1 text-sm text-[#806c74]">
