@@ -184,7 +184,7 @@ export default async function Home() {
     <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <header className="mb-10">
-          <h1 className="text-4xl font-semibold tracking-tight text-[#31262b]">
+          <h1 className="text-5xl font-semibold tracking-tight text-[#31262b]">
             bargain beacon
             <span
               aria-hidden="true"
@@ -194,13 +194,13 @@ export default async function Home() {
             </span>
           </h1>
 
-          <p className="mt-2 text-base text-[#6f5a62]">
+          <p className="mt-2 text-lg text-[#6f5a62]">
             find the best value, not just the lowest price
           </p>
         </header>
 
-        <section className="relative mb-7 overflow-hidden rounded-[20px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
-          <div className="relative z-10 max-w-3xl">
+        <section className="relative mb-7 overflow-hidden rounded-[15px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
+          <div className="relative z-10 lg:max-w-[65%]">
             <p className="text-3xl font-semibold leading-tight text-[#f15f91]">
               best value today
             </p>
@@ -236,7 +236,7 @@ export default async function Home() {
               </svg>
 
               {bestProduct
-                ? `£${bestProduct.price.toFixed(2)}`
+                ? `£${bestProduct.score.deliveredPrice.toFixed(2)}`
                 : "—"}
             </span>
 
@@ -278,12 +278,33 @@ export default async function Home() {
         <section className="mb-8 grid gap-4 md:grid-cols-3">
           <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
-              ◇
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-8 w-8 fill-none stroke-current"
+                strokeWidth="1.8"
+              >
+                <path
+                  d="m4 7.5 8-4 8 4-8 4-8-4Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M4 7.5v9l8 4 8-4v-9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 11.5v9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#f15f91]">
-                currently tracking
+              <p className="text-base font-bold text-[#b52f61]">
+                currently comparing
               </p>
 
               <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
@@ -298,11 +319,37 @@ export default async function Home() {
 
           <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
-              ⌂
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-8 w-8 fill-none stroke-current"
+                strokeWidth="1.8"
+              >
+                <path
+                  d="M4 10h16l-1.5-5h-13L4 10Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M5 10v9h14v-9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9 19v-5h6v5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M4 10c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2c0 1.2 1 2 2 2s2-.8 2-2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#f15f91]">
+              <p className="text-base font-bold text-[#b52f61]">
                 scanning
               </p>
 
@@ -318,11 +365,22 @@ export default async function Home() {
 
           <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
-              ↻
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="h-8 w-8 fill-none stroke-current"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M12 7v5l3.5 2" />
+              </svg>
             </div>
 
             <div>
-              <p className="text-base font-bold text-[#f15f91]">
+              <p className="text-base font-bold text-[#b52f61]">
                 last scanned
               </p>
 
@@ -337,11 +395,21 @@ export default async function Home() {
           </article>
         </section>
 
-        <section className="overflow-hidden rounded-[16px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
+        <section className="overflow-hidden rounded-[15px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1050px] border-collapse text-base leading-6">
+            <table className="w-full min-w-[1050px] table-fixed border-collapse text-base leading-6">
+              <colgroup>
+                <col className="w-[72px]" />
+                <col className="w-[360px]" />
+                <col className="w-[150px]" />
+                <col className="w-[110px]" />
+                <col className="w-[110px]" />
+                <col className="w-[110px]" />
+                <col className="w-[110px]" />
+                <col className="w-[110px]" />
+              </colgroup>
               <thead>
-                <tr className="border-b border-[#f2e4e9] text-left text-[#f15f91]">
+                <tr className="border-b border-[#efced9] bg-[#fff5f8] text-left text-[#b52f61]">
                   <th className="px-5 py-5 text-base font-bold">
                     rank
                   </th>
@@ -399,7 +467,7 @@ export default async function Home() {
                           {row.productName}
                         </a>
                       ) : (
-                        <span className="text-[17px] font-semibold text-[#31262b]">
+                        <span className="block text-[17px] font-semibold leading-6 text-[#31262b] hover:text-[#d94f7d]">
                           {row.productName}
                         </span>
                       )}
@@ -413,15 +481,15 @@ export default async function Home() {
                       {row.retailer}
                     </td>
 
-                    <td className="px-5 py-5 text-center font-medium text-[#31262b]">
-                      £{row.price.toFixed(2)}
+                    <td className="px-5 py-5 text-center font-medium tabular-nums text-[#31262b]">
+                      £{row.score.deliveredPrice.toFixed(2)}
                     </td>
 
-                    <td className="px-5 py-5 text-center text-[#4e3d44]">
+                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
                       {row.score.totalSheets.toLocaleString("en-GB")}
                     </td>
 
-                    <td className="px-5 py-5 text-center text-[#4e3d44]">
+                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
                       {row.rating !== null ? (
                         <span className="inline-flex items-center justify-center gap-1.5">
                           <span>{row.rating}</span>
@@ -439,11 +507,11 @@ export default async function Home() {
                       )}
                     </td>
 
-                    <td className="px-5 py-5 text-center text-[#4e3d44]">
+                    <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
                       {row.reviewCount?.toLocaleString("en-GB") ?? "—"}
                     </td>
 
-                    <td className="px-5 py-5 text-center">
+                    <td className="px-5 py-5 text-center tabular-nums">
                       <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
                         {row.score.adjustedValueScore.toFixed(3)}
                       </span>
