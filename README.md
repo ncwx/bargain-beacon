@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bargain Beacon
 
-## Getting Started
+Bargain Beacon is a shopping value tracker that compares household products by real value rather than just shelf price.
 
-First, run the development server:
+The current MVP focuses on 3-ply toilet paper. It ranks products using pack price, sheet count, delivery availability, stock status, ratings, and review count to calculate a value score.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Current Status
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This is an early MVP.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Currently implemented:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Next.js app
+* Supabase database
+* Relational schema for retailers, products, and price checks
+* Imported dataset of real 3-ply toilet paper products
+* Value scoring algorithm
+* Ranked product table
+* Product links to retailer pages
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Supabase
+* Python import script
+* Excel seed dataset
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How the Scoring Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app calculates value using:
 
-## Deploy on Vercel
+1. Total sheets
+   `rolls_per_pack × sheets_per_roll`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Price per 100 sheets
+   `(price + delivery_fee + small_order_charge) / total_sheets × 100`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Quality multiplier
+
+   * Missing rating/reviews: small penalty
+   * Fewer than 10 reviews: neutral
+   * Rating 4.5+ with enough reviews: small bonus
+   * Rating below 3.8: small penalty
+
+4. Adjusted value score
+   `price_per_100_sheets × quality_multiplier`
+
+Lower score means better value.
+
+## Database Structure
+
+The app uses three main tables:
+
+* `retailers` — stores retailer names
+* `products` — stores product details such as brand, sheet count, ply, and ratings
+* `price_checks` — stores price, stock, delivery availability, and check timestamp
+
+This structure allows future support for price history and scheduled scraping.
+
+## Roadmap
+
+Planned features:
+
+* Improved dashboard UI
+* Search and filtering by retailer/brand
+* Product detail pages
+* Price history tracking
+* Automated retailer scrapers
+* Scheduled daily or weekly scans
+* Support for more household product categories
+
+## Long-Term Goal
+
+The long-term goal is to build a value comparison engine for everyday household products, helping users compare products fairly across retailers by normalised unit value rather than misleading pack prices.
