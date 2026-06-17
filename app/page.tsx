@@ -55,7 +55,7 @@ export default async function Home() {
     `);
 
   if (error) {
-    return <main className="p-8">Error: {error.message}</main>;
+    return <main className="p-8">error: {error.message}</main>;
   }
 
   const ranked = ((data ?? []) as PriceCheckRow[])
@@ -80,7 +80,7 @@ export default async function Home() {
         id: row.id,
         productName: product.product_name,
         brand: product.brand,
-        retailer: product.retailers?.name ?? "Unknown",
+        retailer: product.retailers?.name ?? "unknown",
         url: product.url,
         price: Number(row.price),
         rating: product.rating,
@@ -92,35 +92,63 @@ export default async function Home() {
     .sort((a, b) => a.score!.adjustedValueScore - b.score!.adjustedValueScore);
 
   return (
-    <main className="min-h-screen bg-[#fff7fa] p-8">
+    <main className="min-h-screen bg-[#fff7fa] p-8 lowercase">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#3A2A2F]">PlySpy</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-[#3A2A2F]">
+            bargain beacon
+          </h1>
           <p className="mt-2 text-[#6b4b57]">
-            Best-value delivered 3-ply toilet paper tracker.
+            best-value delivered 3-ply toilet paper tracker.
           </p>
         </div>
 
-        <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#6b4b57]">
-            Tracking <strong>{ranked.length}</strong> eligible products.
-            Lower score = better value.
-          </p>
+        <div className="mb-6 grid gap-4 md:grid-cols-4">
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#6b4b57]">eligible products</p>
+            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
+              {ranked.length}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#6b4b57]">retailers</p>
+            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
+              {new Set(ranked.map((row) => row.retailer)).size}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#6b4b57]">best value</p>
+            <p className="mt-2 text-lg font-semibold text-[#3A2A2F]">
+              {ranked[0]?.brand ?? "—"}
+            </p>
+            <p className="mt-1 text-xs text-[#6b4b57]">
+              {ranked[0]?.retailer ?? "—"}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#6b4b57]">best score</p>
+            <p className="mt-2 text-3xl font-semibold text-[#3A2A2F]">
+              {ranked[0]?.score?.adjustedValueScore.toFixed(3) ?? "—"}
+            </p>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-[#FB99B9] text-left text-[#3A2A2F]">
-                <th className="p-3">Rank</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Retailer</th>
-                <th className="p-3">Brand</th>
-                <th className="p-3">Price</th>
-                <th className="p-3">Total sheets</th>
-                <th className="p-3">Rating</th>
-                <th className="p-3">Reviews</th>
-                <th className="p-3">Score</th>
+                <th className="p-3">rank</th>
+                <th className="p-3">product</th>
+                <th className="p-3">retailer</th>
+                <th className="p-3">brand</th>
+                <th className="p-3">price</th>
+                <th className="p-3">total sheets</th>
+                <th className="p-3">rating</th>
+                <th className="p-3">reviews</th>
+                <th className="p-3">score</th>
               </tr>
             </thead>
             <tbody>
