@@ -54,6 +54,20 @@ function toNullableNumber(
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function calculateDisplayScore(
+  rawScore: number,
+  bestRawScore: number,
+): number {
+  if (rawScore <= 0 || bestRawScore <= 0) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Math.min(100, Math.round((bestRawScore / rawScore) * 100)),
+  );
+}
+
 export default async function Home() {
   const { data, error } = await supabase
     .from("price_checks")
@@ -155,6 +169,8 @@ export default async function Home() {
     );
 
   const bestProduct = ranked[0];
+  const bestRawScore =
+    bestProduct?.score.adjustedValueScore ?? null;
 
   const checkedDates = ranked
     .map((row) => row.checkedAt)
@@ -242,8 +258,11 @@ export default async function Home() {
 
             <span className="inline-flex items-center gap-3 rounded-[12px] bg-[#fff1f5] px-4 py-2.5 text-base text-[#5f4b53]">
               <span className="font-medium">
-                {bestProduct
-                  ? `${bestProduct.score.adjustedValueScore.toFixed(3)} score`
+                {bestProduct && bestRawScore !== null
+                  ? `${calculateDisplayScore(
+                      bestProduct.score.adjustedValueScore,
+                      bestRawScore,
+                    )}/100 value score`
                   : "—"}
               </span>
 
@@ -255,7 +274,7 @@ export default async function Home() {
               </span>
 
               <span className="text-[#806c74]">
-                lower is better
+                higher score = better
               </span>
             </span>
           </div>
@@ -513,7 +532,12 @@ export default async function Home() {
 
                     <td className="px-5 py-5 text-center tabular-nums">
                       <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
-                        {row.score.adjustedValueScore.toFixed(3)}
+                        {bestRawScore !== null
+                          ? calculateDisplayScore(
+                              row.score.adjustedValueScore,
+                              bestRawScore,
+                            )
+                          : "—"}
                       </span>
                     </td>
                   </tr>
