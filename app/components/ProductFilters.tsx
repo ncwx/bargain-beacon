@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 import {
   usePathname,
   useRouter,
@@ -34,7 +37,12 @@ export default function ProductFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const safeMinPrice = Number.isFinite(minPrice)
+  const [isOpen, setIsOpen] =
+    useState(false);
+
+  const safeMinPrice = Number.isFinite(
+    minPrice,
+  )
     ? Math.floor(minPrice)
     : 0;
 
@@ -105,7 +113,9 @@ export default function ProductFilters({
     });
 
   const [activeThumb, setActiveThumb] =
-    useState<"min" | "max" | null>(null);
+    useState<"min" | "max" | null>(
+      null,
+    );
 
   useEffect(() => {
     setPriceRange({
@@ -116,6 +126,41 @@ export default function ProductFilters({
     selectedMinPrice,
     selectedMaxPrice,
   ]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow =
+      document.body.style.overflow;
+
+    document.body.style.overflow =
+      "hidden";
+
+    function handleKeyDown(
+      event: KeyboardEvent,
+    ) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+    };
+  }, [isOpen]);
 
   const rangeSize =
     safeMaxPrice - safeMinPrice;
@@ -133,13 +178,16 @@ export default function ProductFilters({
   function navigateWithParams(
     params: URLSearchParams,
   ) {
-    const queryString = params.toString();
+    const queryString =
+      params.toString();
 
     router.push(
       queryString
         ? `${pathname}?${queryString}`
         : pathname,
-      { scroll: false },
+      {
+        scroll: false,
+      },
     );
   }
 
@@ -160,6 +208,23 @@ export default function ProductFilters({
       params.set(name, value);
     } else {
       params.delete(name);
+    }
+
+    navigateWithParams(params);
+  }
+
+  function updateAvailabilityFilter(
+    name: "stock" | "delivery",
+    checked: boolean,
+  ) {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    if (checked) {
+      params.delete(name);
+    } else {
+      params.set(name, "all");
     }
 
     navigateWithParams(params);
@@ -201,24 +266,9 @@ export default function ProductFilters({
     navigateWithParams(params);
   }
 
-  function updateAvailabilityFilter(
-    name: "stock" | "delivery",
-    checked: boolean,
+  function handleMinChange(
+    value: number,
   ) {
-    const params = new URLSearchParams(
-        searchParams.toString(),
-    );
-
-    if (checked) {
-        params.delete(name);
-    } else {
-        params.set(name, "all");
-    }
-
-    navigateWithParams(params);
-  }
-
-  function handleMinChange(value: number) {
     const nextMin = Math.min(
       value,
       priceRange.max - 1,
@@ -230,7 +280,9 @@ export default function ProductFilters({
     }));
   }
 
-  function handleMaxChange(value: number) {
+  function handleMaxChange(
+    value: number,
+  ) {
     const nextMax = Math.max(
       value,
       priceRange.min + 1,
@@ -257,123 +309,69 @@ export default function ProductFilters({
     navigateWithParams(params);
   }
 
-  const hasActiveFilters = Boolean(
-    selectedRetailer ||
-      selectedBrand ||
-      !inStockOnly ||
-      !deliveryOnly ||
-      selectedMinPrice > safeMinPrice ||
-      selectedMaxPrice < safeMaxPrice,
-  );
+  const priceFilterIsActive =
+    selectedMinPrice > safeMinPrice ||
+    selectedMaxPrice < safeMaxPrice;
 
-  const selectClassName =
-    "w-full rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef] sm:w-auto";
+  const activeFilterCount = [
+    Boolean(selectedRetailer),
+    Boolean(selectedBrand),
+    !inStockOnly,
+    !deliveryOnly,
+    priceFilterIsActive,
+  ].filter(Boolean).length;
+
+  const hasActiveFilters =
+    activeFilterCount > 0;
+
+  const drawerSelectClassName =
+    "w-full rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 text-base text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
+
+  const sortSelectClassName =
+    "min-h-[44px] min-w-[190px] rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
 
   return (
     <>
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls="product-filter-drawer"
+          onClick={() => setIsOpen(true)}
+          className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm font-semibold text-[#31262b] transition hover:border-[#fb99b9] focus:outline-none focus:ring-4 focus:ring-[#ffecef] sm:w-auto"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          >
+            <path d="M4 6h16" />
+            <path d="M4 12h16" />
+            <path d="M4 18h16" />
+            <path d="M9 4v4" />
+            <path d="M15 10v4" />
+            <path d="M11 16v4" />
+          </svg>
+
+          <span>filters</span>
+
+          {activeFilterCount > 0 && (
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fb99b9] px-1.5 text-xs font-bold text-[#31262b]">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <label
-            className="sr-only"
-            htmlFor="retailer-filter"
-          >
-            filter by retailer
-          </label>
-
-          <select
-            id="retailer-filter"
-            value={selectedRetailer}
-            onChange={(event) =>
-              updateFilter(
-                "retailer",
-                event.target.value,
-              )
-            }
-            className={`${selectClassName} min-w-[180px]`}
-          >
-            <option value="">
-              all retailers
-            </option>
-
-            {retailers.map((retailer) => (
-              <option
-                key={retailer}
-                value={retailer}
-              >
-                {retailer.toLowerCase()}
-              </option>
-            ))}
-          </select>
-
-          <label
-            className="sr-only"
-            htmlFor="brand-filter"
-          >
-            filter by brand
-          </label>
-
-          <select
-            id="brand-filter"
-            value={selectedBrand}
-            onChange={(event) =>
-              updateFilter(
-                "brand",
-                event.target.value,
-              )
-            }
-            className={`${selectClassName} min-w-[180px]`}
-          >
-            <option value="">
-              all brands
-            </option>
-
-            {brands.map((brand) => (
-              <option
-                key={brand}
-                value={brand}
-              >
-                {brand.toLowerCase()}
-              </option>
-            ))}
-          </select>
-
-          <label className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] transition hover:border-[#fb99b9]">
-            <input
-                type="checkbox"
-                checked={inStockOnly}
-                onChange={(event) =>
-                updateAvailabilityFilter(
-                    "stock",
-                    event.target.checked,
-                )
-                }
-                className="h-4 w-4 accent-[#fb99b9]"
-            />
-
-            <span>in stock only</span>
-        </label>
-
-        <label className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm text-[#31262b] transition hover:border-[#fb99b9]">
-            <input
-                type="checkbox"
-                checked={deliveryOnly}
-                onChange={(event) =>
-                updateAvailabilityFilter(
-                    "delivery",
-                    event.target.checked,
-                )
-                }
-                className="h-4 w-4 accent-[#fb99b9]"
-            />
-
-            <span>delivery available</span>
-        </label>
-
-          <label
-            className="sr-only"
+            className="text-sm font-medium text-[#806c74]"
             htmlFor="sort-products"
           >
-            sort products
+            sort by
           </label>
 
           <select
@@ -385,7 +383,7 @@ export default function ProductFilters({
                 event.target.value,
               )
             }
-            className={`${selectClassName} min-w-[190px]`}
+            className={`${sortSelectClassName} flex-1 sm:flex-none`}
           >
             <option value="value">
               best value
@@ -407,159 +405,368 @@ export default function ProductFilters({
               most reviewed
             </option>
           </select>
-
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="px-2 py-2 text-sm text-[#806c74] underline-offset-4 transition hover:text-[#31262b] hover:underline"
-            >
-              clear filters
-            </button>
-          )}
-        </div>
-
-        <div className="w-full lg:w-[260px] lg:-translate-y-0.5 lg:shrink-0">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-sm font-medium text-[#806c74]">
-              price
-            </span>
-
-            <span className="text-sm font-medium text-[#806c74]">
-              £{priceRange.min} – £
-              {priceRange.max}
-            </span>
-          </div>
-
-          <div className="relative h-7">
-            <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#f3e4e9]" />
-
-            <div
-              className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#fb99b9]"
-              style={{
-                left: `${minPosition}%`,
-                right: `${
-                  100 - maxPosition
-                }%`,
-              }}
-            />
-
-            <input
-              aria-label="minimum price"
-              aria-valuetext={`£${priceRange.min}`}
-              type="range"
-              min={safeMinPrice}
-              max={safeMaxPrice}
-              step="1"
-              value={priceRange.min}
-              onPointerDown={() =>
-                setActiveThumb("min")
-              }
-              onPointerUp={(event) => {
-                const nextMin = Math.min(
-                  Number(
-                    event.currentTarget
-                      .value,
-                  ),
-                  priceRange.max - 1,
-                );
-
-                setActiveThumb(null);
-
-                commitPriceRange(
-                  nextMin,
-                  priceRange.max,
-                );
-              }}
-              onKeyUp={(event) => {
-                const nextMin = Math.min(
-                  Number(
-                    event.currentTarget
-                      .value,
-                  ),
-                  priceRange.max - 1,
-                );
-
-                commitPriceRange(
-                  nextMin,
-                  priceRange.max,
-                );
-              }}
-              onChange={(event) =>
-                handleMinChange(
-                  Number(
-                    event.target.value,
-                  ),
-                )
-              }
-              className="price-range-input absolute inset-0 h-7 w-full"
-              style={{
-                zIndex:
-                  activeThumb === "min"
-                    ? 4
-                    : 3,
-              }}
-            />
-
-            <input
-              aria-label="maximum price"
-              aria-valuetext={`£${priceRange.max}`}
-              type="range"
-              min={safeMinPrice}
-              max={safeMaxPrice}
-              step="1"
-              value={priceRange.max}
-              onPointerDown={() =>
-                setActiveThumb("max")
-              }
-              onPointerUp={(event) => {
-                const nextMax = Math.max(
-                  Number(
-                    event.currentTarget
-                      .value,
-                  ),
-                  priceRange.min + 1,
-                );
-
-                setActiveThumb(null);
-
-                commitPriceRange(
-                  priceRange.min,
-                  nextMax,
-                );
-              }}
-              onKeyUp={(event) => {
-                const nextMax = Math.max(
-                  Number(
-                    event.currentTarget
-                      .value,
-                  ),
-                  priceRange.min + 1,
-                );
-
-                commitPriceRange(
-                  priceRange.min,
-                  nextMax,
-                );
-              }}
-              onChange={(event) =>
-                handleMaxChange(
-                  Number(
-                    event.target.value,
-                  ),
-                )
-              }
-              className="price-range-input absolute inset-0 h-7 w-full"
-              style={{
-                zIndex:
-                  activeThumb === "max"
-                    ? 4
-                    : 2,
-              }}
-            />
-          </div>
         </div>
       </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            aria-label="close filters"
+            onClick={() =>
+              setIsOpen(false)
+            }
+            className="absolute inset-0 bg-[#31262b]/30 backdrop-blur-[1px]"
+          />
+
+          <aside
+            id="product-filter-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filter-drawer-title"
+            className="absolute inset-y-0 left-0 flex w-full max-w-[400px] flex-col bg-[#fffafb] shadow-[12px_0_40px_rgba(49,38,43,0.18)]"
+          >
+            <div className="flex items-center justify-between border-b border-[#f2e4e9] px-6 py-5">
+              <div>
+                <h2
+                  id="filter-drawer-title"
+                  className="text-xl font-bold text-[#31262b]"
+                >
+                  filters
+                </h2>
+
+                <p className="mt-1 text-sm text-[#806c74]">
+                  narrow down your results
+                </p>
+              </div>
+
+              <button
+                type="button"
+                aria-label="close filters"
+                onClick={() =>
+                  setIsOpen(false)
+                }
+                className="flex h-10 w-10 items-center justify-center rounded-full text-2xl leading-none text-[#806c74] transition hover:bg-[#ffecef] hover:text-[#31262b] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              <section className="border-b border-[#f2e4e9] pb-6">
+                <label
+                  htmlFor="retailer-filter"
+                  className="mb-2 block text-sm font-semibold text-[#31262b]"
+                >
+                  retailer
+                </label>
+
+                <select
+                  id="retailer-filter"
+                  value={selectedRetailer}
+                  onChange={(event) =>
+                    updateFilter(
+                      "retailer",
+                      event.target.value,
+                    )
+                  }
+                  className={
+                    drawerSelectClassName
+                  }
+                >
+                  <option value="">
+                    all retailers
+                  </option>
+
+                  {retailers.map(
+                    (retailer) => (
+                      <option
+                        key={retailer}
+                        value={retailer}
+                      >
+                        {retailer.toLowerCase()}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </section>
+
+              <section className="border-b border-[#f2e4e9] py-6">
+                <label
+                  htmlFor="brand-filter"
+                  className="mb-2 block text-sm font-semibold text-[#31262b]"
+                >
+                  brand
+                </label>
+
+                <select
+                  id="brand-filter"
+                  value={selectedBrand}
+                  onChange={(event) =>
+                    updateFilter(
+                      "brand",
+                      event.target.value,
+                    )
+                  }
+                  className={
+                    drawerSelectClassName
+                  }
+                >
+                  <option value="">
+                    all brands
+                  </option>
+
+                  {brands.map((brand) => (
+                    <option
+                      key={brand}
+                      value={brand}
+                    >
+                      {brand.toLowerCase()}
+                    </option>
+                  ))}
+                </select>
+              </section>
+
+              <fieldset className="border-b border-[#f2e4e9] py-6">
+                <legend className="mb-3 text-sm font-semibold text-[#31262b]">
+                  availability
+                </legend>
+
+                <div className="space-y-3">
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
+                    <span className="text-base text-[#31262b]">
+                      in stock only
+                    </span>
+
+                    <input
+                      type="checkbox"
+                      checked={inStockOnly}
+                      onChange={(event) =>
+                        updateAvailabilityFilter(
+                          "stock",
+                          event.target
+                            .checked,
+                        )
+                      }
+                      className="h-5 w-5 accent-[#fb99b9]"
+                    />
+                  </label>
+
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
+                    <span className="text-base text-[#31262b]">
+                      delivery available
+                    </span>
+
+                    <input
+                      type="checkbox"
+                      checked={deliveryOnly}
+                      onChange={(event) =>
+                        updateAvailabilityFilter(
+                          "delivery",
+                          event.target
+                            .checked,
+                        )
+                      }
+                      className="h-5 w-5 accent-[#fb99b9]"
+                    />
+                  </label>
+                </div>
+              </fieldset>
+
+              <section className="pt-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-[#31262b]">
+                    price
+                  </h3>
+
+                  <span className="text-sm font-medium text-[#806c74]">
+                    £{priceRange.min} – £
+                    {priceRange.max}
+                  </span>
+                </div>
+
+                <div className="relative h-8">
+                  <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#f3e4e9]" />
+
+                  <div
+                    className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#fb99b9]"
+                    style={{
+                      left: `${minPosition}%`,
+                      right: `${
+                        100 - maxPosition
+                      }%`,
+                    }}
+                  />
+
+                  <input
+                    aria-label="minimum price"
+                    aria-valuetext={`£${priceRange.min}`}
+                    type="range"
+                    min={safeMinPrice}
+                    max={safeMaxPrice}
+                    step="1"
+                    value={priceRange.min}
+                    onPointerDown={() =>
+                      setActiveThumb("min")
+                    }
+                    onPointerUp={(event) => {
+                      const nextMin =
+                        Math.min(
+                          Number(
+                            event
+                              .currentTarget
+                              .value,
+                          ),
+                          priceRange.max -
+                            1,
+                        );
+
+                      setActiveThumb(null);
+
+                      commitPriceRange(
+                        nextMin,
+                        priceRange.max,
+                      );
+                    }}
+                    onPointerCancel={() =>
+                      setActiveThumb(null)
+                    }
+                    onKeyUp={(event) => {
+                      const nextMin =
+                        Math.min(
+                          Number(
+                            event
+                              .currentTarget
+                              .value,
+                          ),
+                          priceRange.max -
+                            1,
+                        );
+
+                      commitPriceRange(
+                        nextMin,
+                        priceRange.max,
+                      );
+                    }}
+                    onChange={(event) =>
+                      handleMinChange(
+                        Number(
+                          event.target
+                            .value,
+                        ),
+                      )
+                    }
+                    className="price-range-input absolute inset-0 h-8 w-full"
+                    style={{
+                      zIndex:
+                        activeThumb ===
+                        "min"
+                          ? 4
+                          : 3,
+                    }}
+                  />
+
+                  <input
+                    aria-label="maximum price"
+                    aria-valuetext={`£${priceRange.max}`}
+                    type="range"
+                    min={safeMinPrice}
+                    max={safeMaxPrice}
+                    step="1"
+                    value={priceRange.max}
+                    onPointerDown={() =>
+                      setActiveThumb("max")
+                    }
+                    onPointerUp={(event) => {
+                      const nextMax =
+                        Math.max(
+                          Number(
+                            event
+                              .currentTarget
+                              .value,
+                          ),
+                          priceRange.min +
+                            1,
+                        );
+
+                      setActiveThumb(null);
+
+                      commitPriceRange(
+                        priceRange.min,
+                        nextMax,
+                      );
+                    }}
+                    onPointerCancel={() =>
+                      setActiveThumb(null)
+                    }
+                    onKeyUp={(event) => {
+                      const nextMax =
+                        Math.max(
+                          Number(
+                            event
+                              .currentTarget
+                              .value,
+                          ),
+                          priceRange.min +
+                            1,
+                        );
+
+                      commitPriceRange(
+                        priceRange.min,
+                        nextMax,
+                      );
+                    }}
+                    onChange={(event) =>
+                      handleMaxChange(
+                        Number(
+                          event.target
+                            .value,
+                        ),
+                      )
+                    }
+                    className="price-range-input absolute inset-0 h-8 w-full"
+                    style={{
+                      zIndex:
+                        activeThumb ===
+                        "max"
+                          ? 4
+                          : 2,
+                    }}
+                  />
+                </div>
+
+                <div className="mt-2 flex justify-between text-xs text-[#806c74]">
+                  <span>£{safeMinPrice}</span>
+                  <span>£{safeMaxPrice}</span>
+                </div>
+              </section>
+            </div>
+
+            <div className="flex items-center gap-3 border-t border-[#f2e4e9] bg-white px-6 py-5">
+              <button
+                type="button"
+                onClick={clearFilters}
+                disabled={
+                  !hasActiveFilters
+                }
+                className="min-h-[46px] flex-1 rounded-xl border border-[#f2e4e9] px-4 py-3 text-sm font-semibold text-[#806c74] transition hover:border-[#fb99b9] hover:text-[#31262b] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                clear all
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setIsOpen(false)
+                }
+                className="min-h-[46px] flex-1 rounded-xl bg-[#fb99b9] px-4 py-3 text-sm font-bold text-[#31262b] transition hover:bg-[#f889af] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
+              >
+                view results
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
 
       <style jsx>{`
         .price-range-input {

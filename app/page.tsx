@@ -287,6 +287,10 @@ export default async function Home({
         a.score.adjustedValueScore -
         b.score.adjustedValueScore,
     )
+    .map((row, index) => ({
+      ...row,
+      rank: index + 1,
+    }));
     
   const deliveredPrices = ranked.map(
     (row) =>
@@ -408,14 +412,8 @@ export default async function Home({
       );
     });
 
-  const valueRanked =
-    filteredRanked.map((row, index) => ({
-      ...row,
-      rank: index + 1,
-    }));
-
   const sortedRanked = [
-    ...valueRanked,
+    ...filteredRanked,
   ].sort((a, b) => {
     switch (selectedSort) {
       case "price-low":
