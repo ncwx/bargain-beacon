@@ -365,7 +365,7 @@ export default function ProductFilters({
             </span>
 
             {activeFilterCount > 0 && (
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] px-1.5 text-xs font-bold text-[var(--bb-accent-strong)]">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] px-1.5 text-xs font-bold text-[var(--bb-on-accent-soft)]">
                 {activeFilterCount}
               </span>
             )}

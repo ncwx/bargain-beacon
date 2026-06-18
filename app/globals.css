@@ -23,6 +23,8 @@
   --bb-accent: #d94f7d;
   --bb-accent-strong: #b52f61;
   --bb-accent-soft: #ffe4e8;
+  --bb-on-accent: #241218;
+  --bb-on-accent-soft: var(--bb-accent-strong);
 
   /* borders and focus */
   --bb-border: #f2e4e9;
@@ -207,6 +209,49 @@ textarea {
 
   --bb-shadow-control:
     0 2px 8px rgb(0 0 0 / 32%);
+}
+
+/* =========================================================
+   FOREST THEME
+   ========================================================= */
+
+:root[data-theme="forest"] {
+  /* warm neutral surfaces */
+  --bb-background: #f6f4ee;
+  --bb-surface: #ffffff;
+  --bb-surface-soft: #eeece4;
+
+  /* deep forest text */
+  --bb-text-primary: #132a13;
+  --bb-text-secondary: #344e41;
+  --bb-text-muted: #656d4a;
+  --bb-text-placeholder: #777966;
+
+  /* bark-brown accents */
+  --bb-accent: #7f4f24;
+  --bb-accent-strong: #582f0e;
+
+  /* deep green highlighted surfaces */
+  --bb-accent-soft: #31572c;
+
+  /* text placed on accent surfaces */
+  --bb-on-accent: #ffffff;
+  --bb-on-accent-soft: #ecf39e;
+
+  /* earthy borders and green focus */
+  --bb-border: #a68a64;
+  --bb-focus: #4f772d;
+  --bb-focus-ring: #90a955;
+
+  /* woodland-toned shadows */
+  --bb-shadow-surface:
+    0 4px 14px rgb(88 47 14 / 11%);
+
+  --bb-shadow-drawer:
+    12px 0 40px rgb(19 42 19 / 28%);
+
+  --bb-shadow-control:
+    0 2px 7px rgb(88 47 14 / 20%);
 }
 
 /* =========================================================

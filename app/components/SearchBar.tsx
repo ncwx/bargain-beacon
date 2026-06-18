@@ -172,7 +172,7 @@ export default function SearchBar() {
             text-[var(--bb-text-muted)]
             transition
             hover:bg-[var(--bb-accent-soft)]
-            hover:text-[var(--bb-text-primary)]
+            hover:text-[var(--bb-on-accent-soft)]
             focus:outline-none
             focus:ring-4
             focus:ring-[var(--bb-focus-ring)]

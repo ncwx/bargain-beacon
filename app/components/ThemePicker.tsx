@@ -13,14 +13,18 @@ const themeOptions = [
     value: "blush",
     label: "Blush",
   },
-    {
-        value: "ocean",
-        label: "Ocean",
-    },
-    {
-        value: "berry",
-        label: "Berry",
-    },
+  {
+    value: "ocean",
+    label: "Ocean",
+  },
+  {
+    value: "berry",
+    label: "Berry",
+  },
+  {
+    value: "forest",
+    label: "Forest",
+  },
 ] as const satisfies ReadonlyArray<{
   value: SelectableThemeName;
   label: string;
