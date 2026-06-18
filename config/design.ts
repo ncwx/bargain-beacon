@@ -3,6 +3,7 @@ export const selectableThemeNames = [
   "ocean",
   "berry",
   "forest",
+  "minimal",
 ] as const;
 
 export type SelectableThemeName =
@@ -10,7 +11,6 @@ export type SelectableThemeName =
 
 export type ThemeName =
   | SelectableThemeName
-  | "minimal";
 
 export type InterfaceCasing =
   | "sentence"

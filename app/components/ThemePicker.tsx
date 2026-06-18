@@ -25,6 +25,10 @@ const themeOptions = [
     value: "forest",
     label: "Forest",
   },
+  {
+    value: "minimal",
+    label: "Minimal",
+  },
 ] as const satisfies ReadonlyArray<{
   value: SelectableThemeName;
   label: string;

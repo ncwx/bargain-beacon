@@ -256,42 +256,43 @@ textarea {
 
 /* =========================================================
    MINIMAL THEME
-
-   this is only a basic alternative for testing the theme
-   controls. it can be refined later
    ========================================================= */
 
-[data-theme="minimal"] {
+html[data-theme="minimal"] {
   /* backgrounds and surfaces */
   --bb-background: #f7f7f7;
   --bb-surface: #ffffff;
-  --bb-surface-soft: #f2f2f2;
+  --bb-surface-soft: #f1f1f1;
 
   /* neutral text */
-  --bb-text-primary: #222222;
-  --bb-text-secondary: #444444;
-  --bb-text-muted: #666666;
-  --bb-text-placeholder: #8a8a8a;
+  --bb-text-primary: #171717;
+  --bb-text-secondary: #353535;
+  --bb-text-muted: #5f5f5f;
+  --bb-text-placeholder: #767676;
 
   /* accent colours */
   --bb-accent: #333333;
   --bb-accent-strong: #111111;
-  --bb-accent-soft: #e7e7e7;
+  --bb-accent-soft: #333333;
+
+  /* text on accent surfaces */
+  --bb-on-accent: #ffffff;
+  --bb-on-accent-soft: #ffffff;
 
   /* borders and focus */
-  --bb-border: #dedede;
-  --bb-focus: #333333;
-  --bb-focus-ring: #f2f2f2;
+  --bb-border: #8a8a8a;
+  --bb-focus: #111111;
+  --bb-focus-ring: #666666;
 
   /* shadows */
   --bb-shadow-surface:
-    0 4px 14px rgb(0 0 0 / 6%);
+    0 4px 14px rgb(0 0 0 / 8%);
 
   --bb-shadow-drawer:
-    12px 0 40px rgb(0 0 0 / 16%);
+    12px 0 40px rgb(0 0 0 / 20%);
 
   --bb-shadow-control:
-    0 2px 6px rgb(0 0 0 / 14%);
+    0 2px 6px rgb(0 0 0 / 16%);
 }
 
 /* =========================================================
