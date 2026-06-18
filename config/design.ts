@@ -2,7 +2,6 @@ export const selectableThemeNames = [
   "blush",
   "ocean",
   "berry",
-  "forest"
 ] as const;
 
 export type SelectableThemeName =

@@ -171,6 +171,43 @@ textarea {
     0 2px 6px rgb(44 125 160 / 18%);
 }
 
+/* =========================================================
+   BERRY THEME — DARK
+   ========================================================= */
+
+:root[data-theme="berry"] {
+  /* backgrounds and surfaces */
+  --bb-background: #170e13;
+  --bb-surface: #24171e;
+  --bb-surface-soft: #33212a;
+
+  /* text */
+  --bb-text-primary: #fff4f7;
+  --bb-text-secondary: #e8ced8;
+  --bb-text-muted: #c7a7b4;
+  --bb-text-placeholder: #a98593;
+
+  /* accent colours */
+  --bb-accent: #ff6f9f;
+  --bb-accent-strong: #ffd0df;
+  --bb-accent-soft: #4a2233;
+  --bb-on-accent: #21151b;
+
+  /* borders and focus */
+  --bb-border: #95677a;
+  --bb-focus: #ff8ab2;
+  --bb-focus-ring: #ff8ab2;
+
+  /* shadows */
+  --bb-shadow-surface:
+    0 4px 16px rgb(0 0 0 / 28%);
+
+  --bb-shadow-drawer:
+    12px 0 40px rgb(0 0 0 / 44%);
+
+  --bb-shadow-control:
+    0 2px 8px rgb(0 0 0 / 32%);
+}
 
 /* =========================================================
    MINIMAL THEME
