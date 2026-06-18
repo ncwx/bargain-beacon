@@ -325,10 +325,10 @@ export default function ProductFilters({
     activeFilterCount > 0;
 
   const drawerSelectClassName =
-    "w-full rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 text-base text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
+    "w-full appearance-none rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] py-3 pl-4 pr-12 text-base text-[var(--bb-text-primary)] outline-none transition hover:border-[var(--bb-focus)] focus:border-[var(--bb-focus)] focus:ring-4 focus:ring-[var(--bb-focus-ring)]";
 
   const sortSelectClassName =
-    "min-h-[44px] min-w-[190px] appearance-none rounded-xl border border-[#f2e4e9] bg-white py-2.5 pl-4 pr-12 text-sm text-[#31262b] outline-none transition focus:border-[#fb99b9] focus:ring-4 focus:ring-[#ffecef]";
+    "h-[46px] min-w-[190px] appearance-none rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] py-2.5 pl-4 pr-12 text-sm text-[var(--bb-text-primary)] outline-none transition hover:border-[var(--bb-focus)] focus:border-[var(--bb-focus)] focus:ring-4 focus:ring-[var(--bb-focus-ring)]";
 
   return (
     <>
@@ -339,7 +339,7 @@ export default function ProductFilters({
             aria-expanded={isOpen}
             aria-controls="product-filter-drawer"
             onClick={() => setIsOpen(true)}
-            className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm font-semibold text-[#31262b] transition hover:border-[#fb99b9] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
+            className="inline-flex h-[46px] shrink-0 items-center justify-center gap-2 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] px-4 text-sm leading-none text-[var(--bb-text-primary)] transition hover:border-[var(--bb-focus)] focus:outline-none focus:ring-4 focus:ring-[var(--bb-focus-ring)]"
           >
             <svg
               aria-hidden="true"
@@ -365,13 +365,13 @@ export default function ProductFilters({
             </span>
 
             {activeFilterCount > 0 && (
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fb99b9] px-1.5 text-xs font-bold text-[#31262b]">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] px-1.5 text-xs font-bold text-[var(--bb-accent-strong)]">
                 {activeFilterCount}
               </span>
             )}
           </button>
 
-          <span className="whitespace-nowrap text-sm font-medium text-[#806c74]">
+          <span className="whitespace-nowrap text-sm font-medium leading-none text-[var(--bb-text-muted)]">
             {formatInterfaceText(
               resultLabel,
             )}
@@ -380,7 +380,7 @@ export default function ProductFilters({
 
         <div className="flex w-full items-center gap-3 sm:w-auto">
           <label
-            className="shrink-0 text-sm font-medium text-[#806c74]"
+            className="shrink-0 text-sm font-medium leading-none text-[var(--bb-text-muted)]"
             htmlFor="sort-products"
           >
             {formatInterfaceText(
@@ -388,7 +388,7 @@ export default function ProductFilters({
             )}
           </label>
 
-          <div className="relative flex-1 font-bold text-[#31262b] sm:flex-none">
+          <div className="relative flex-1 sm:flex-none">
             <select
               id="sort-products"
               value={selectedSort}
@@ -435,7 +435,7 @@ export default function ProductFilters({
               aria-hidden="true"
               viewBox="0 0 20 20"
               fill="none"
-              className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#31262b]"
+              className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bb-text-primary)]"
             >
               <path
                 d="m5 7.5 5 5 5-5"
@@ -457,8 +457,10 @@ export default function ProductFilters({
             onClick={() =>
               setIsOpen(false)
             }
-            className="absolute inset-0 bg-[#31262b]/30"
+            className="absolute inset-0"
             style={{
+              backgroundColor:
+                "color-mix(in srgb, var(--bb-text-primary) 30%, transparent)",
               animation:
                 "filter-backdrop-in 240ms ease-out",
             }}
@@ -469,25 +471,27 @@ export default function ProductFilters({
             role="dialog"
             aria-modal="true"
             aria-labelledby="filter-drawer-title"
-            className="absolute inset-y-0 left-0 flex w-full max-w-[400px] flex-col bg-[#fffafb] shadow-[12px_0_40px_rgba(49,38,43,0.18)]"
+            className="absolute inset-y-0 left-0 flex w-full max-w-[400px] flex-col bg-[var(--bb-background)] text-[var(--bb-text-primary)]"
             style={{
               animation:
                 "filter-drawer-in 280ms cubic-bezier(0.25, 0.8, 0.25, 1)",
+              boxShadow:
+                "var(--bb-shadow-drawer)",
               willChange: "transform",
             }}
           >
-            <div className="flex items-center justify-between border-b border-[#f2e4e9] px-6 py-5">
+            <div className="flex items-center justify-between border-b border-[var(--bb-border)] px-6 py-5">
               <div>
                 <h2
                   id="filter-drawer-title"
-                  className="text-xl font-bold text-[#31262b]"
+                  className="text-xl font-bold text-[var(--bb-text-primary)]"
                 >
                   {formatInterfaceText(
                     "Filters",
                   )}
                 </h2>
 
-                <p className="mt-1 text-sm text-[#806c74]">
+                <p className="mt-1 text-sm text-[var(--bb-text-muted)]">
                   {formatInterfaceText(
                     "Narrow down your results",
                   )}
@@ -500,105 +504,133 @@ export default function ProductFilters({
                 onClick={() =>
                   setIsOpen(false)
                 }
-                className="flex h-10 w-10 items-center justify-center rounded-full text-2xl leading-none text-[#806c74] transition hover:bg-[#ffecef] hover:text-[#31262b] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-4xl leading-none text-[var(--bb-text-muted)] transition hover:bg-[var(--bb-surface-soft)] hover:text-[var(--bb-text-primary)] focus:outline-none focus:ring-4 focus:ring-[var(--bb-focus-ring)]"
               >
                 ×
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-6">
-              <section className="border-b border-[#f2e4e9] pb-6">
+              <section className="border-b border-[var(--bb-border)] pb-6">
                 <label
                   htmlFor="retailer-filter"
-                  className="mb-2 block text-sm font-semibold text-[#31262b]"
+                  className="mb-2 block text-sm font-bold text-[var(--bb-text-primary)]"
                 >
                   {formatInterfaceText(
                     "Retailer",
                   )}
                 </label>
 
+            <div className="relative">
                 <select
-                  id="retailer-filter"
-                  value={selectedRetailer}
-                  onChange={(event) =>
+                    id="retailer-filter"
+                    value={selectedRetailer}
+                    onChange={(event) =>
                     updateFilter(
-                      "retailer",
-                      event.target.value,
+                        "retailer",
+                        event.target.value,
                     )
-                  }
-                  className={
-                    drawerSelectClassName
-                  }
+                    }
+                    className={drawerSelectClassName}
                 >
-                  <option value="">
+                    <option value="">
                     {formatInterfaceText(
-                      "All retailers",
+                        "All retailers",
                     )}
-                  </option>
+                    </option>
 
-                  {retailers.map(
-                    (retailer) => (
-                      <option
+                    {retailers.map((retailer) => (
+                    <option
                         key={retailer}
                         value={retailer}
-                      >
+                    >
                         {retailer}
-                      </option>
-                    ),
-                  )}
+                    </option>
+                    ))}
                 </select>
+
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bb-text-primary)]"
+                >
+                    <path
+                    d="m5 7.5 5 5 5-5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    />
+                </svg>
+                </div>
               </section>
 
-              <section className="border-b border-[#f2e4e9] py-6">
+              <section className="border-b border-[var(--bb-border)] py-6">
                 <label
                   htmlFor="brand-filter"
-                  className="mb-2 block text-sm font-semibold text-[#31262b]"
+                  className="mb-2 block text-sm font-bold text-[var(--bb-text-primary)]"
                 >
                   {formatInterfaceText(
                     "Brand",
                   )}
                 </label>
 
-                <select
-                  id="brand-filter"
-                  value={selectedBrand}
-                  onChange={(event) =>
-                    updateFilter(
-                      "brand",
-                      event.target.value,
-                    )
-                  }
-                  className={
-                    drawerSelectClassName
-                  }
-                >
-                  <option value="">
-                    {formatInterfaceText(
-                      "All brands",
-                    )}
-                  </option>
-
-                  {brands.map((brand) => (
-                    <option
-                      key={brand}
-                      value={brand}
+                <div className="relative">
+                    <select
+                        id="brand-filter"
+                        value={selectedBrand}
+                        onChange={(event) =>
+                        updateFilter(
+                            "brand",
+                            event.target.value,
+                        )
+                        }
+                        className={drawerSelectClassName}
                     >
-                      {brand}
-                    </option>
-                  ))}
-                </select>
+                        <option value="">
+                        {formatInterfaceText(
+                            "All brands",
+                        )}
+                        </option>
+
+                        {brands.map((brand) => (
+                        <option
+                            key={brand}
+                            value={brand}
+                        >
+                            {brand}
+                        </option>
+                        ))}
+                    </select>
+
+                    <svg
+                        aria-hidden="true"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--bb-text-primary)]"
+                    >
+                        <path
+                        d="m5 7.5 5 5 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        />
+                    </svg>
+                    </div>
               </section>
 
-              <fieldset className="border-b border-[#f2e4e9] py-6">
-                <legend className="mb-3 text-sm font-semibold text-[#31262b]">
+              <section className="border-b border-[var(--bb-border)] py-6">
+                <h3 className="mb-3 text-sm font-bold text-[var(--bb-text-primary)]">
                   {formatInterfaceText(
                     "Availability",
                   )}
-                </legend>
+                </h3>
 
                 <div className="space-y-3">
-                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
-                    <span className="text-base text-[#31262b]">
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] px-4 py-3 transition hover:border-[var(--bb-focus)]">
+                    <span className="text-base text-[var(--bb-text-primary)]">
                       {formatInterfaceText(
                         "In stock only",
                       )}
@@ -614,12 +646,12 @@ export default function ProductFilters({
                             .checked,
                         )
                       }
-                      className="h-5 w-5 accent-[#fb99b9]"
+                      className="h-5 w-5 accent-[var(--bb-accent)]"
                     />
                   </label>
 
-                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
-                    <span className="text-base text-[#31262b]">
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] px-4 py-3 transition hover:border-[var(--bb-focus)]">
+                    <span className="text-base text-[var(--bb-text-primary)]">
                       {formatInterfaceText(
                         "Delivery available",
                       )}
@@ -635,31 +667,31 @@ export default function ProductFilters({
                             .checked,
                         )
                       }
-                      className="h-5 w-5 accent-[#fb99b9]"
+                      className="h-5 w-5 accent-[var(--bb-accent)]"
                     />
                   </label>
                 </div>
-              </fieldset>
+              </section>
 
               <section className="pt-6">
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-[#31262b]">
+                  <h3 className="text-sm font-bold text-[var(--bb-text-primary)]">
                     {formatInterfaceText(
                       "Price",
                     )}
                   </h3>
 
-                  <span className="text-sm font-medium text-[#806c74]">
+                  <span className="text-sm font-medium text-[var(--bb-text-muted)]">
                     £{priceRange.min} – £
                     {priceRange.max}
                   </span>
                 </div>
 
                 <div className="relative h-8">
-                  <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#f3e4e9]" />
+                  <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[var(--bb-border)]" />
 
                   <div
-                    className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#fb99b9]"
+                    className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[var(--bb-accent)]"
                     style={{
                       left: `${minPosition}%`,
                       right: `${
@@ -805,7 +837,7 @@ export default function ProductFilters({
                   />
                 </div>
 
-                <div className="mt-2 flex justify-between text-xs text-[#806c74]">
+                <div className="mt-2 flex justify-between text-xs text-[var(--bb-text-muted)]">
                   <span>
                     £{safeMinPrice}
                   </span>
@@ -817,14 +849,14 @@ export default function ProductFilters({
               </section>
             </div>
 
-            <div className="flex items-center gap-3 border-t border-[#f2e4e9] bg-white px-6 py-5">
+            <div className="grid grid-cols-2 gap-3 border-t border-[var(--bb-border)] bg-[var(--bb-surface)] px-6 py-5">
               <button
                 type="button"
                 onClick={clearFilters}
                 disabled={
                   !hasActiveFilters
                 }
-                className="min-h-[46px] flex-1 rounded-xl border border-[#f2e4e9] px-4 py-3 text-sm font-semibold text-[#806c74] transition hover:border-[#fb99b9] hover:text-[#31262b] disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-[48px] rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] px-4 text-sm font-bold leading-none text-[var(--bb-text-primary)] transition hover:border-[var(--bb-focus)] hover:text-[var(--bb-text-muted)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {formatInterfaceText(
                   "Clear all",
@@ -836,7 +868,7 @@ export default function ProductFilters({
                 onClick={() =>
                   setIsOpen(false)
                 }
-                className="min-h-[46px] flex-1 rounded-xl bg-[#fb99b9] px-4 py-3 text-sm font-bold text-[#31262b] transition hover:bg-[#f889af] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
+                className="h-[48px] rounded-[var(--bb-radius)] bg-[var(--bb-accent)] px-4 text-sm font-bold leading-none text-[var(--bb-text-primary)] transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--bb-focus-ring)]"
               >
                 {formatInterfaceText(
                   "View results",
@@ -887,11 +919,14 @@ export default function ProductFilters({
           margin-top: -8px;
           appearance: none;
           -webkit-appearance: none;
-          border: 3px solid #fb99b9;
-          border-radius: 9999px;
-          background: #ffffff;
-          box-shadow: 0 2px 6px
-            rgba(120, 70, 90, 0.16);
+          border: 3px solid
+            var(--bb-accent);
+          border-radius:
+            var(--bb-radius-pill);
+          background:
+            var(--bb-surface);
+          box-shadow:
+            var(--bb-shadow-control);
           cursor: grab;
           pointer-events: auto;
         }
@@ -899,9 +934,9 @@ export default function ProductFilters({
         .price-range-input::-webkit-slider-thumb:active {
           cursor: grabbing;
           box-shadow:
-            0 0 0 4px #ffecef,
-            0 2px 6px
-              rgba(120, 70, 90, 0.16);
+            0 0 0 4px
+              var(--bb-focus-ring),
+            var(--bb-shadow-control);
         }
 
         .price-range-input:focus-visible {
@@ -910,9 +945,9 @@ export default function ProductFilters({
 
         .price-range-input:focus-visible::-webkit-slider-thumb {
           box-shadow:
-            0 0 0 4px #ffecef,
-            0 2px 6px
-              rgba(120, 70, 90, 0.16);
+            0 0 0 4px
+              var(--bb-focus-ring),
+            var(--bb-shadow-control);
         }
 
         .price-range-input::-moz-range-track {
@@ -928,11 +963,14 @@ export default function ProductFilters({
         .price-range-input::-moz-range-thumb {
           width: 16px;
           height: 16px;
-          border: 3px solid #fb99b9;
-          border-radius: 9999px;
-          background: #ffffff;
-          box-shadow: 0 2px 6px
-            rgba(120, 70, 90, 0.16);
+          border: 3px solid
+            var(--bb-accent);
+          border-radius:
+            var(--bb-radius-pill);
+          background:
+            var(--bb-surface);
+          box-shadow:
+            var(--bb-shadow-control);
           cursor: grab;
           pointer-events: auto;
         }
@@ -940,9 +978,9 @@ export default function ProductFilters({
         .price-range-input::-moz-range-thumb:active {
           cursor: grabbing;
           box-shadow:
-            0 0 0 4px #ffecef,
-            0 2px 6px
-              rgba(120, 70, 90, 0.16);
+            0 0 0 4px
+              var(--bb-focus-ring),
+            var(--bb-shadow-control);
         }
       `}</style>
     </>

@@ -22,6 +22,7 @@
   /* accent colours */
   --bb-accent: #d94f7d;
   --bb-accent-strong: #b52f61;
+  --bb-accent-soft:#ffecef;
 
   /* borders and focus */
   --bb-border: #f2e4e9;
@@ -100,7 +101,7 @@ button,
 input,
 select,
 textarea {
-  font: inherit;
+  font-family: inherit;
 }
 
 /* =========================================================
@@ -124,6 +125,8 @@ textarea {
   /* accent colours */
   --bb-accent: #d94f7d;
   --bb-accent-strong: #b52f61;
+  --bb-accent-soft:#ffe4e8;
+
 
   /* borders and focus */
   --bb-border: #f2e4e9;
@@ -163,6 +166,7 @@ textarea {
   /* accent colours */
   --bb-accent: #333333;
   --bb-accent-strong: #111111;
+  --bb-accent-soft: #e7e7e7;
 
   /* borders and focus */
   --bb-border: #dedede;
