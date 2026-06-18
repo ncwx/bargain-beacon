@@ -39,6 +39,7 @@ export default function ProductFilters({
   const [isOpen, setIsOpen] =
     useState(false);
 
+
   const safeMinPrice = Number.isFinite(
     minPrice,
   )
@@ -337,9 +338,7 @@ export default function ProductFilters({
             type="button"
             aria-expanded={isOpen}
             aria-controls="product-filter-drawer"
-            onClick={() =>
-              setIsOpen(true)
-            }
+            onClick={() => setIsOpen(true)}
             className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[#f2e4e9] bg-white px-4 py-2.5 text-sm font-semibold text-[#31262b] transition hover:border-[#fb99b9] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
           >
             <svg
@@ -440,7 +439,11 @@ export default function ProductFilters({
             onClick={() =>
               setIsOpen(false)
             }
-            className="absolute inset-0 bg-[#31262b]/30 backdrop-blur-[1px]"
+            className="absolute inset-0 bg-[#31262b]/30"
+            style={{
+              animation:
+                "filter-backdrop-in 240ms ease-out",
+            }}
           />
 
           <aside
@@ -449,6 +452,11 @@ export default function ProductFilters({
             aria-modal="true"
             aria-labelledby="filter-drawer-title"
             className="absolute inset-y-0 left-0 flex w-full max-w-[400px] flex-col bg-[#fffafb] shadow-[12px_0_40px_rgba(49,38,43,0.18)]"
+            style={{
+              animation:
+                "filter-drawer-in 280ms cubic-bezier(0.25, 0.8, 0.25, 1)",
+              willChange: "transform",
+            }}
           >
             <div className="flex items-center justify-between border-b border-[#f2e4e9] px-6 py-5">
               <div>
@@ -798,6 +806,26 @@ export default function ProductFilters({
       )}
 
       <style jsx>{`
+        @keyframes filter-drawer-in {
+          from {
+            transform: translateX(-100%);
+          }
+
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes filter-backdrop-in {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
         .price-range-input {
           appearance: none;
           -webkit-appearance: none;
