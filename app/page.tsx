@@ -1,5 +1,6 @@
 import ProductFilters from "@/app/components/ProductFilters";
 import SearchBar from "@/app/components/SearchBar";
+import ThemePicker from "@/app/components/ThemePicker";
 import { calculateScore } from "@/lib/scoring";
 import { supabase } from "@/lib/supabase";
 import { Suspense } from "react";
@@ -535,14 +536,20 @@ export default async function Home({
             </p>
           </div>
 
-          <div className="w-full md:mt-3.5 md:max-w-[380px]">
-            <Suspense
-              fallback={
-                <div className="h-[52px] rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)]" />
-              }
-            >
-              <SearchBar />
-            </Suspense>
+          <div className="w-full md:mt-3.5 md:w-auto">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="w-full sm:w-[380px]">
+                <Suspense
+                  fallback={
+                    <div className="h-[48px] rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)]" />
+                  }
+                >
+                  <SearchBar />
+                </Suspense>
+              </div>
+
+              <ThemePicker />
+            </div>
           </div>
         </header>
 

@@ -1,14 +1,20 @@
+export const selectableThemeNames = [
+  "blush",
+  "ocean",
+  "berry",
+  "forest"
+] as const;
+
+export type SelectableThemeName =
+  (typeof selectableThemeNames)[number];
+
 export type ThemeName =
-  | "blush"
+  | SelectableThemeName
   | "minimal";
 
 export type InterfaceCasing =
   | "sentence"
   | "lowercase";
-
-export type FontName =
-  | "geist"
-  | "system";
 
 export type RadiusStyle =
   | "soft"
@@ -17,15 +23,17 @@ export type RadiusStyle =
 export type DesignConfig = {
   theme: ThemeName;
   casing: InterfaceCasing;
-  font: FontName;
   radius: RadiusStyle;
 };
 
+export const THEME_COOKIE_NAME =
+  "bargain-beacon-theme";
+
 export const design: DesignConfig = {
   /*
-   * colour palette:
-   * "blush"   = current Bargain Beacon pink
-   * "minimal" = neutral black, white and grey
+   * default colour palette:
+   * users without a saved preference
+   * will always receive Blush
    */
   theme: "blush",
 
@@ -34,17 +42,10 @@ export const design: DesignConfig = {
    * "sentence"  = Best value today
    * "lowercase" = best value today
    *
-   * this will not affect product names, brands
-   * or retailer names
+   * this does not affect product names,
+   * brands or retailer names
    */
   casing: "sentence",
-
-  /*
-   * main application font:
-   * "geist"  = current Next.js font
-   * "system" = operating-system font
-   */
-  font: "geist",
 
   /*
    * corners:
@@ -54,9 +55,21 @@ export const design: DesignConfig = {
   radius: "soft",
 };
 
+export function isSelectableThemeName(
+  value: unknown,
+): value is SelectableThemeName {
+  return (
+    typeof value === "string" &&
+    selectableThemeNames.includes(
+      value as SelectableThemeName,
+    )
+  );
+}
+
 /*
  * use this only for interface wording
- * never pass product names, brands or retailer names into it
+ * never pass product names, brands or
+ * retailer names into it
  */
 export function formatInterfaceText(
   text: string,

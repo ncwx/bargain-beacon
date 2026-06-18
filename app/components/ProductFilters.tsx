@@ -868,7 +868,7 @@ export default function ProductFilters({
                 onClick={() =>
                   setIsOpen(false)
                 }
-                className="h-[48px] rounded-[var(--bb-radius)] bg-[var(--bb-accent)] px-4 text-sm font-bold leading-none text-[var(--bb-text-primary)] transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--bb-focus-ring)]"
+                className="h-[48px] rounded-[var(--bb-radius)] bg-[var(--bb-accent)] px-4 text-sm font-bold leading-none text-[var(--bb-on-accent)] transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--bb-focus-ring)]"
               >
                 {formatInterfaceText(
                   "View results",

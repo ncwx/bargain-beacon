@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { design } from "@/config/design";
+import { cookies } from "next/headers";
+
+import {
+  design,
+  isSelectableThemeName,
+  THEME_COOKIE_NAME,
+  type SelectableThemeName,
+} from "@/config/design";
+
+import {
+  ThemeProvider,
+} from "@/app/components/ThemeProvider";
+
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "bargain beacon",
@@ -19,22 +20,44 @@ export const metadata: Metadata = {
     "find the best-value products across retailers",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+
+  const savedTheme =
+    cookieStore.get(
+      THEME_COOKIE_NAME,
+    )?.value;
+
+  const defaultTheme: SelectableThemeName =
+    isSelectableThemeName(
+      design.theme,
+    )
+      ? design.theme
+      : "blush";
+
+  const initialTheme: SelectableThemeName =
+    isSelectableThemeName(savedTheme)
+      ? savedTheme
+      : defaultTheme;
+
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      data-theme={design.theme}
+      className="h-full antialiased"
+      data-theme={initialTheme}
       data-casing={design.casing}
-      data-font={design.font}
       data-radius={design.radius}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <ThemeProvider
+          initialTheme={initialTheme}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
