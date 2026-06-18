@@ -1,11 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useEffect, useState } from "react";
 import { formatInterfaceText } from "@/config/design";
 
 export default function SearchBar() {
@@ -16,58 +16,78 @@ export default function SearchBar() {
   const currentQuery =
     searchParams.get("q") ?? "";
 
+  const searchParamsString =
+    searchParams.toString();
+
   const [query, setQuery] =
     useState(currentQuery);
 
-  // keep the input synced when navigating backwards or forwards
+  /*
+   * Keep the input synchronised when the user
+   * navigates backwards or forwards.
+   */
   useEffect(() => {
     setQuery(currentQuery);
   }, [currentQuery]);
 
-  // update the URL shortly after the user stops typing
+  /*
+   * Update the URL shortly after the user stops typing.
+   * router.replace avoids creating a browser-history
+   * entry for every individual character.
+   */
   useEffect(() => {
     if (query === currentQuery) {
       return;
     }
 
-    const timeout = setTimeout(() => {
-      const params =
-        new URLSearchParams(
-          searchParams.toString(),
+    const timeout = window.setTimeout(
+      () => {
+        const params =
+          new URLSearchParams(
+            searchParamsString,
+          );
+
+        const trimmedQuery =
+          query.trim();
+
+        if (trimmedQuery) {
+          params.set(
+            "q",
+            trimmedQuery,
+          );
+        } else {
+          params.delete("q");
+        }
+
+        const queryString =
+          params.toString();
+
+        router.replace(
+          queryString
+            ? `${pathname}?${queryString}`
+            : pathname,
+          {
+            scroll: false,
+          },
         );
-
-      const trimmedQuery =
-        query.trim();
-
-      if (trimmedQuery) {
-        params.set("q", trimmedQuery);
-      } else {
-        params.delete("q");
-      }
-
-      const queryString =
-        params.toString();
-
-      router.replace(
-        queryString
-          ? `${pathname}?${queryString}`
-          : pathname,
-        {
-          scroll: false,
-        },
-      );
-    }, 250);
+      },
+      250,
+    );
 
     return () => {
-      clearTimeout(timeout);
+      window.clearTimeout(timeout);
     };
   }, [
     query,
     currentQuery,
     pathname,
     router,
-    searchParams,
+    searchParamsString,
   ]);
+
+  function clearSearch() {
+    setQuery("");
+  }
 
   return (
     <div className="relative w-full">
@@ -77,7 +97,9 @@ export default function SearchBar() {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.8"
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8d747e]"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[var(--bb-text-muted)]"
       >
         <circle
           cx="11"
@@ -106,26 +128,54 @@ export default function SearchBar() {
           "Search products, brands or retailers...",
         )}
         autoComplete="off"
+        spellCheck={false}
         className="
-          w-full rounded-2xl border border-[#f1dce3]
-          bg-white py-3 pl-11 pr-11
-          text-sm text-[#31262b]
-          outline-none transition
-          placeholder:text-[#a58f97]
-          focus:border-[#fb99b9]
-          focus:ring-4 focus:ring-[#ffecef]
+          h-[48px]
+          w-full
+          rounded-[var(--bb-radius)]
+          border
+          border-[var(--bb-border)]
+          bg-[var(--bb-surface)]
+          py-3
+          pl-11
+          pr-12
+          text-sm
+          text-[var(--bb-text-primary)]
+          outline-none
+          transition
+          placeholder:text-[var(--bb-text-placeholder)]
+          hover:border-[var(--bb-focus)]
+          focus:border-[var(--bb-focus)]
+          focus:ring-4
+          focus:ring-[var(--bb-focus-ring)]
         "
       />
 
-      {query && (
+      {query.length > 0 && (
         <button
           type="button"
-          onClick={() => setQuery("")}
+          onClick={clearSearch}
           aria-label="Clear search"
           className="
-            absolute right-4 top-1/2 -translate-y-1/2
-            text-lg leading-none text-[#8d747e]
-            transition hover:text-[#31262b]
+            absolute
+            right-3
+            top-1/2
+            flex
+            h-8
+            w-8
+            -translate-y-1/2
+            items-center
+            justify-center
+            rounded-full
+            text-xl
+            leading-none
+            text-[var(--bb-text-muted)]
+            transition
+            hover:bg-[var(--bb-accent-soft)]
+            hover:text-[var(--bb-text-primary)]
+            focus:outline-none
+            focus:ring-4
+            focus:ring-[var(--bb-focus-ring)]
           "
         >
           ×

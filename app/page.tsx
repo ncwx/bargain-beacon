@@ -530,7 +530,7 @@ export default async function Home({
             </h1>
 
             <p className="bb-interface-text mt-2 text-[var(--bb-text-muted)]">
-              Find the best value,
+              find the best value,
               not just the lowest price
             </p>
           </div>
@@ -569,7 +569,7 @@ export default async function Home({
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <span className="inline-flex min-w-[104px] items-center justify-center gap-2 rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-5 py-2 text-base font-bold text-[var(--bb-accent-strong)]">
+            <span className="inline-flex min-w-[104px] items-center justify-center gap-2 rounded-[var(--bb-radius)] bg-[var(--bb-accent-soft)] px-5 py-2 text-base font-bold text-[var(--bb-accent-strong)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -626,7 +626,7 @@ export default async function Home({
 
         <section className="mb-8 grid gap-4 md:grid-cols-3">
           <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -670,7 +670,7 @@ export default async function Home({
           </article>
 
           <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -720,7 +720,7 @@ export default async function Home({
           </article>
 
           <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -785,7 +785,7 @@ export default async function Home({
               </colgroup>
 
               <thead>
-                <tr className="border-b border-[var(--bb-border)] bg-[var(--bb-surface-soft)] text-left text-[var(--bb-accent-strong)]">
+                <tr className="border-b border-[var(--bb-border)] bg-[var(--bb-accent-soft)] text-left text-[var(--bb-accent-strong)]">
                   <th className="bb-interface-text px-5 py-5 text-base font-bold">
                     Value rank
                   </th>
@@ -828,7 +828,7 @@ export default async function Home({
                       className="border-b border-[var(--bb-border)] transition-colors last:border-0 hover:bg-[var(--bb-background)]"
                     >
                       <td className="px-5 py-5">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-base font-bold text-[var(--bb-accent-strong)]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bb-accent-soft)] text-base font-bold text-[var(--bb-accent-strong)]">
                           {row.rank}
                         </span>
                       </td>
@@ -922,7 +922,7 @@ export default async function Home({
                       </td>
 
                       <td className="px-5 py-5 text-center tabular-nums">
-                        <span className="inline-flex min-w-[74px] items-center justify-center rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-4 py-2 font-semibold leading-none text-[var(--bb-accent-strong)]">
+                        <span className="inline-flex min-w-[74px] items-center justify-center rounded-[var(--bb-radius)] bg-[var(--bb-accent-soft)] px-4 py-2 font-semibold leading-none text-[var(--bb-accent-strong)]">
                           {bestRawScore !==
                           null
                             ? calculateDisplayScore(
