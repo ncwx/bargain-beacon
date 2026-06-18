@@ -189,7 +189,7 @@ export default async function Home({
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#fff8fa] p-8 text-base text-[#31262b]">
+      <main className="min-h-screen bg-[var(--bb-background)] p-8 text-base text-[var(--bb-text-primary)]">
         <p className="bb-interface-text">
           Error loading products:{" "}
           {error.message}
@@ -521,15 +521,15 @@ export default async function Home({
     : `${ranked.length} products`;
 
   return (
-    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 sm:px-8 lg:px-12">
+    <main className="min-h-screen bg-[var(--bb-background)] px-5 py-8 text-base leading-6 text-[var(--bb-text-primary)] sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-4xl font-semibold tracking-tight text-[#31262b]">
+            <h1 className="text-4xl font-semibold tracking-tight text-[var(--bb-text-primary)]">
               bargain beacon
             </h1>
 
-            <p className="bb-interface-text mt-2 text-[#7a6970]">
+            <p className="bb-interface-text mt-2 text-[var(--bb-text-muted)]">
               Find the best value,
               not just the lowest price
             </p>
@@ -538,7 +538,7 @@ export default async function Home({
           <div className="w-full md:mt-3.5 md:max-w-[380px]">
             <Suspense
               fallback={
-                <div className="h-[52px] rounded-[14px] border border-[#f2e4e9] bg-white" />
+                <div className="h-[52px] rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)]" />
               }
             >
               <SearchBar />
@@ -546,13 +546,13 @@ export default async function Home({
           </div>
         </header>
 
-        <section className="relative mb-7 overflow-hidden rounded-[15px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
+        <section className="relative mb-7 overflow-hidden rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] px-8 py-10 shadow-[var(--bb-shadow-surface)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
           <div className="relative z-10 lg:max-w-[65%]">
-            <p className="bb-interface-text text-3xl font-semibold leading-tight text-[#f15f91]">
+            <p className="bb-interface-text text-3xl font-semibold leading-tight text-[var(--bb-accent)]">
               Best value today
             </p>
 
-            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[#31262b] sm:text-5xl lg:text-6xl">
+            <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[var(--bb-text-primary)] sm:text-5xl lg:text-6xl">
               {bestProduct ? (
                 bestProduct.productName
               ) : (
@@ -562,21 +562,21 @@ export default async function Home({
               )}
             </h2>
 
-            <p className="mt-4 text-3xl font-medium leading-tight text-[#6f5a62]">
+            <p className="mt-4 text-3xl font-medium leading-tight text-[var(--bb-text-secondary)]">
               {bestProduct?.retailer ??
                 "—"}
             </p>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <span className="inline-flex min-w-[104px] items-center justify-center gap-2 rounded-[12px] bg-[#ffdbe7] px-5 py-2 text-base font-bold text-[#9f2f57]">
+            <span className="inline-flex min-w-[104px] items-center justify-center gap-2 rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-5 py-2 text-base font-bold text-[var(--bb-accent-strong)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
                 className="h-5 w-5 shrink-0"
               >
                 <path
-                  fill="#f15f91"
+                  fill="var(--bb-accent)"
                   d="M3 4.75C3 3.78 3.78 3 4.75 3h6.6c.46 0 .9.18 1.23.51l8.02 8.02a1.75 1.75 0 0 1 0 2.47L14 20.6a1.75 1.75 0 0 1-2.47 0L3.51 12.58A1.74 1.74 0 0 1 3 11.35v-6.6Z"
                 />
 
@@ -584,7 +584,7 @@ export default async function Home({
                   cx="7.5"
                   cy="7.5"
                   r="1.55"
-                  fill="#fff1f5"
+                  fill="var(--bb-surface-soft)"
                 />
               </svg>
 
@@ -595,7 +595,7 @@ export default async function Home({
                 : "—"}
             </span>
 
-            <span className="inline-flex items-center gap-3 rounded-[12px] bg-[#fff1f5] px-4 py-2.5 text-base text-[#5f4b53]">
+            <span className="inline-flex items-center gap-3 rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-4 py-2.5 text-base text-[var(--bb-text-secondary)]">
               <span className="bb-interface-text font-medium">
                 {bestProduct &&
                 bestRawScore !== null
@@ -609,14 +609,14 @@ export default async function Home({
             </span>
           </div>
 
-          <div className="pointer-events-none absolute -bottom-16 -right-8 hidden h-[370px] w-[370px] rounded-full bg-[#fbe4ec] lg:block">
-            <div className="absolute inset-[74px] flex items-center justify-center rounded-full bg-white/80 shadow-[0_5px_18px_rgba(120,70,90,0.05)]">
+          <div className="pointer-events-none absolute -bottom-16 -right-8 hidden h-[370px] w-[370px] rounded-full bg-[var(--bb-surface-soft)] lg:block">
+            <div className="absolute inset-[74px] flex items-center justify-center rounded-full bg-[var(--bb-surface)] shadow-[var(--bb-shadow-surface)]">
               <div className="text-center">
-                <p className="bb-interface-text text-5xl font-semibold text-[#fb99b9]">
+                <p className="bb-interface-text text-5xl font-semibold text-[var(--bb-accent)]">
                   3 ply
                 </p>
 
-                <p className="bb-interface-text mt-2 text-base text-[#6f5a62]">
+                <p className="bb-interface-text mt-2 text-base text-[var(--bb-text-muted)]">
                   Best-value pick
                 </p>
               </div>
@@ -625,8 +625,8 @@ export default async function Home({
         </section>
 
         <section className="mb-8 grid gap-4 md:grid-cols-3">
-          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -654,23 +654,23 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+              <p className="bb-interface-text text-lg font-bold text-[var(--bb-accent-strong)]">
                 Currently comparing
               </p>
 
-              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[var(--bb-text-primary)]">
                 {eligibleProducts.length}{" "}
                 products
               </p>
 
-              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+              <p className="bb-interface-text mt-2 text-base text-[var(--bb-text-muted)]">
                 Eligible 3-ply listings
               </p>
             </div>
           </article>
 
-          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -704,23 +704,23 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+              <p className="bb-interface-text text-lg font-bold text-[var(--bb-accent-strong)]">
                 Scanning
               </p>
 
-              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[var(--bb-text-primary)]">
                 {retailerCount} retailers
               </p>
 
-              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+              <p className="bb-interface-text mt-2 text-base text-[var(--bb-text-muted)]">
                 Delivery-friendly
                 sources
               </p>
             </div>
           </article>
 
-          <article className="flex items-center gap-5 rounded-[14px] border border-[#f2e4e9] bg-white p-6 shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ffecef] text-2xl text-[#d94f7d]">
+          <article className="flex items-center gap-5 rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] p-6 shadow-[var(--bb-shadow-surface)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-2xl text-[var(--bb-accent)]">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -736,15 +736,15 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+              <p className="bb-interface-text text-lg font-bold text-[var(--bb-accent-strong)]">
                 Last scanned
               </p>
 
-              <p className="mt-1 text-xl font-medium leading-snug text-[#31262b]">
+              <p className="mt-1 text-xl font-medium leading-snug text-[var(--bb-text-primary)]">
                 {lastScanned}
               </p>
 
-              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+              <p className="bb-interface-text mt-2 text-base text-[var(--bb-text-muted)]">
                 Latest stored price
                 check
               </p>
@@ -755,7 +755,7 @@ export default async function Home({
         <section className="mb-5">
           <Suspense
             fallback={
-              <div className="h-[72px] rounded-xl bg-white" />
+              <div className="h-[72px] rounded-[var(--bb-radius)] bg-[var(--bb-surface)]" />
             }
           >
             <ProductFilters
@@ -770,7 +770,7 @@ export default async function Home({
           </Suspense>
         </section>
 
-        <section className="overflow-hidden rounded-[15px] border border-[#f2e4e9] bg-white shadow-[0_4px_14px_rgba(120,70,90,0.06)]">
+        <section className="overflow-hidden rounded-[var(--bb-radius)] border border-[var(--bb-border)] bg-[var(--bb-surface)] shadow-[var(--bb-shadow-surface)]">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1050px] table-fixed border-collapse text-base leading-6">
               <colgroup>
@@ -785,7 +785,7 @@ export default async function Home({
               </colgroup>
 
               <thead>
-                <tr className="border-b border-[#efced9] bg-[#fff5f8] text-left text-[#b52f61]">
+                <tr className="border-b border-[var(--bb-border)] bg-[var(--bb-surface-soft)] text-left text-[var(--bb-accent-strong)]">
                   <th className="bb-interface-text px-5 py-5 text-base font-bold">
                     Value rank
                   </th>
@@ -825,10 +825,10 @@ export default async function Home({
                   (row) => (
                     <tr
                       key={row.id}
-                      className="border-b border-[#f5e9ed] transition-colors last:border-0 hover:bg-[#fff8fa]"
+                      className="border-b border-[var(--bb-border)] transition-colors last:border-0 hover:bg-[var(--bb-background)]"
                     >
                       <td className="px-5 py-5">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffecef] text-base font-bold text-[#b83e69]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bb-surface-soft)] text-base font-bold text-[var(--bb-accent-strong)]">
                           {row.rank}
                         </span>
                       </td>
@@ -839,21 +839,21 @@ export default async function Home({
                             href={row.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-[17px] font-semibold text-[#31262b] hover:text-[#d94f7d]"
+                            className="text-[17px] font-semibold text-[var(--bb-text-primary)] hover:text-[var(--bb-accent)]"
                           >
                             {
                               row.productName
                             }
                           </a>
                         ) : (
-                          <span className="block text-[17px] font-semibold leading-6 text-[#31262b] hover:text-[#d94f7d]">
+                          <span className="block text-[17px] font-semibold leading-6 text-[var(--bb-text-primary)] hover:text-[var(--bb-accent)]">
                             {
                               row.productName
                             }
                           </span>
                         )}
 
-                        <p className="bb-interface-text mt-1 text-base text-[#806c74]">
+                        <p className="bb-interface-text mt-1 text-base text-[var(--bb-text-muted)]">
                           {row.rollsPerPack ??
                             "—"}{" "}
                           rolls
@@ -863,13 +863,13 @@ export default async function Home({
                           !row.deliveryAvailable) && (
                           <div className="mt-2 flex flex-wrap gap-2">
                             {!row.inStock && (
-                              <span className="bb-interface-text rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                              <span className="bb-interface-text rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-2 py-1 text-xs font-medium text-[var(--bb-text-muted)]">
                                 Out of stock
                               </span>
                             )}
 
                             {!row.deliveryAvailable && (
-                              <span className="bb-interface-text rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                              <span className="bb-interface-text rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-2 py-1 text-xs font-medium text-[var(--bb-text-muted)]">
                                 Collection only
                               </span>
                             )}
@@ -877,24 +877,24 @@ export default async function Home({
                         )}
                       </td>
 
-                      <td className="px-5 py-5 text-[#4e3d44]">
+                      <td className="px-5 py-5 text-[var(--bb-text-secondary)]">
                         {row.retailer}
                       </td>
 
-                      <td className="px-5 py-5 text-center font-medium tabular-nums text-[#31262b]">
+                      <td className="px-5 py-5 text-center font-medium tabular-nums text-[var(--bb-text-primary)]">
                         £
                         {row.score.deliveredPrice.toFixed(
                           2,
                         )}
                       </td>
 
-                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                      <td className="px-5 py-5 text-center tabular-nums text-[var(--bb-text-secondary)]">
                         {row.score.totalSheets.toLocaleString(
                           "en-GB",
                         )}
                       </td>
 
-                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                      <td className="px-5 py-5 text-center tabular-nums text-[var(--bb-text-secondary)]">
                         {row.rating !==
                         null ? (
                           <span className="inline-flex items-center justify-center gap-1.5">
@@ -905,7 +905,7 @@ export default async function Home({
                             <svg
                               viewBox="0 0 24 24"
                               aria-hidden="true"
-                              className="h-[18px] w-[18px] shrink-0 fill-[#f15f91]"
+                              className="h-[18px] w-[18px] shrink-0 fill-[var(--bb-accent)]"
                             >
                               <path d="m12 2.8 2.77 5.61 6.19.9-4.48 4.36 1.06 6.16L12 16.92l-5.54 2.91 1.06-6.16-4.48-4.36 6.19-.9L12 2.8Z" />
                             </svg>
@@ -915,14 +915,14 @@ export default async function Home({
                         )}
                       </td>
 
-                      <td className="px-5 py-5 text-center tabular-nums text-[#4e3d44]">
+                      <td className="px-5 py-5 text-center tabular-nums text-[var(--bb-text-secondary)]">
                         {row.reviewCount?.toLocaleString(
                           "en-GB",
                         ) ?? "—"}
                       </td>
 
                       <td className="px-5 py-5 text-center tabular-nums">
-                        <span className="inline-flex min-w-[74px] items-center justify-center rounded-[12px] bg-[#ffecef] px-4 py-2 font-semibold leading-none text-[#9f2f57]">
+                        <span className="inline-flex min-w-[74px] items-center justify-center rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-4 py-2 font-semibold leading-none text-[var(--bb-accent-strong)]">
                           {bestRawScore !==
                           null
                             ? calculateDisplayScore(
@@ -942,7 +942,7 @@ export default async function Home({
                   <tr>
                     <td
                       colSpan={8}
-                      className="bb-interface-text px-5 py-12 text-center text-base text-[#6f5a62]"
+                      className="bb-interface-text px-5 py-12 text-center text-base text-[var(--bb-text-muted)]"
                     >
                       {hasActiveCriteria
                         ? "No matching products found"

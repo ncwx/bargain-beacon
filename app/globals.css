@@ -1,61 +1,61 @@
 @import "tailwindcss";
 
 /* =========================================================
-   EXISTING NEXT.JS GLOBALS
+   BARGAIN BEACON DESIGN TOKENS
+
+   these are the fallback values used before a named theme
+   is applied. they match the Blush theme
    ========================================================= */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-
-  /* =======================================================
-     BARGAIN BEACON DESIGN TOKENS
-
-     these store the theme values centrally
-     existing components are not using them yet, so adding
-     these should not alter the current appearance
-     ======================================================= */
-
-  /* backgrounds */
+  /* backgrounds and surfaces */
   --bb-background: #fff8fa;
   --bb-surface: #ffffff;
-  --bb-surface-soft: #fff4f7;
-  --bb-surface-accent: #ffecef;
+  --bb-surface-soft: #fff5f8;
 
-  /* text */
-  --bb-text: #31262b;
+  /* neutral text */
+  --bb-text-primary: #31262b;
+  --bb-text-secondary: #4e3d44;
   --bb-text-muted: #806c74;
-  --bb-text-soft: #a58f97;
+  --bb-text-placeholder: #a58f97;
 
   /* accent colours */
-  --bb-accent: #ed4f87;
-  --bb-accent-strong: #bd285d;
-  --bb-accent-soft: #fb99b9;
+  --bb-accent: #d94f7d;
+  --bb-accent-strong: #b52f61;
 
   /* borders and focus */
   --bb-border: #f2e4e9;
-  --bb-border-strong: #f1dce3;
-  --bb-focus-border: #fb99b9;
-  --bb-focus-ring: #ffecef;
+  --bb-focus: #d94f7d;
+  --bb-focus-ring: #fff5f8;
 
-  /* corners */
-  --bb-card-radius: 15px;
-  --bb-control-radius: 12px;
-  --bb-pill-radius: 9999px;
+  /* shape */
+  --bb-radius: 15px;
+  --bb-radius-pill: 9999px;
 
   /* shadows */
-  --bb-card-shadow:
-    0 6px 20px rgb(79 41 56 / 5%);
+  --bb-shadow-surface:
+    0 4px 14px rgb(120 70 90 / 6%);
 
-  --bb-drawer-shadow:
+  --bb-shadow-drawer:
     12px 0 40px rgb(49 38 43 / 18%);
 
-  /* font setting for future use */
+  --bb-shadow-control:
+    0 2px 6px rgb(120 70 90 / 16%);
+
+  /* font */
   --bb-font-selected:
     Arial,
     Helvetica,
     sans-serif;
+
+  /* Next.js/Tailwind aliases */
+  --background: var(--bb-background);
+  --foreground: var(--bb-text-primary);
 }
+
+/* =========================================================
+   TAILWIND BASE ALIASES
+   ========================================================= */
 
 @theme inline {
   --color-background: var(--background);
@@ -64,20 +64,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* =========================================================
+   GLOBAL BASE STYLES
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bb-background);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  min-height: 100%;
+  margin: 0;
+  background: var(--bb-background);
+  color: var(--bb-text-primary);
 
   /*
-   * keep the app's current font unchanged for now
-   * we will connect this to --bb-font-selected safely later
+   * arial is kept here because it is the font currently
+   * visible in the working version of the app
+   *
+   * we will connect this to --bb-font-selected only when
+   * the font control is refactored
    */
   font-family:
     Arial,
@@ -85,69 +96,95 @@ body {
     sans-serif;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 /* =========================================================
-   COLOUR THEMES
+   BLUSH THEME
+
+   this is the current Bargain Beacon appearance
    ========================================================= */
 
 [data-theme="blush"] {
+  /* backgrounds and surfaces */
   --bb-background: #fff8fa;
   --bb-surface: #ffffff;
-  --bb-surface-soft: #fff4f7;
-  --bb-surface-accent: #ffecef;
+  --bb-surface-soft: #fff5f8;
 
-  --bb-text: #31262b;
+  /* neutral text */
+  --bb-text-primary: #31262b;
+  --bb-text-secondary: #4e3d44;
   --bb-text-muted: #806c74;
-  --bb-text-soft: #a58f97;
+  --bb-text-placeholder: #a58f97;
 
-  --bb-accent: #ed4f87;
-  --bb-accent-strong: #bd285d;
-  --bb-accent-soft: #fb99b9;
+  /* accent colours */
+  --bb-accent: #d94f7d;
+  --bb-accent-strong: #b52f61;
 
+  /* borders and focus */
   --bb-border: #f2e4e9;
-  --bb-border-strong: #f1dce3;
-  --bb-focus-border: #fb99b9;
-  --bb-focus-ring: #ffecef;
+  --bb-focus: #d94f7d;
+  --bb-focus-ring: #fff5f8;
 
-  --bb-card-shadow:
-    0 6px 20px rgb(79 41 56 / 5%);
+  /* shadows */
+  --bb-shadow-surface:
+    0 4px 14px rgb(120 70 90 / 6%);
 
-  --bb-drawer-shadow:
+  --bb-shadow-drawer:
     12px 0 40px rgb(49 38 43 / 18%);
+
+  --bb-shadow-control:
+    0 2px 6px rgb(120 70 90 / 16%);
 }
 
+/* =========================================================
+   MINIMAL THEME
+
+   this is only a basic alternative for testing the theme
+   controls. it can be refined later
+   ========================================================= */
+
 [data-theme="minimal"] {
+  /* backgrounds and surfaces */
   --bb-background: #f7f7f7;
   --bb-surface: #ffffff;
   --bb-surface-soft: #f2f2f2;
-  --bb-surface-accent: #e9e9e9;
 
-  --bb-text: #222222;
+  /* neutral text */
+  --bb-text-primary: #222222;
+  --bb-text-secondary: #444444;
   --bb-text-muted: #666666;
-  --bb-text-soft: #8a8a8a;
+  --bb-text-placeholder: #8a8a8a;
 
+  /* accent colours */
   --bb-accent: #333333;
   --bb-accent-strong: #111111;
-  --bb-accent-soft: #d8d8d8;
 
+  /* borders and focus */
   --bb-border: #dedede;
-  --bb-border-strong: #c9c9c9;
-  --bb-focus-border: #555555;
-  --bb-focus-ring: #e4e4e4;
+  --bb-focus: #333333;
+  --bb-focus-ring: #f2f2f2;
 
-  --bb-card-shadow:
-    0 6px 20px rgb(0 0 0 / 5%);
+  /* shadows */
+  --bb-shadow-surface:
+    0 4px 14px rgb(0 0 0 / 6%);
 
-  --bb-drawer-shadow:
+  --bb-shadow-drawer:
     12px 0 40px rgb(0 0 0 / 16%);
+
+  --bb-shadow-control:
+    0 2px 6px rgb(0 0 0 / 14%);
 }
 
 /* =========================================================
    INTERFACE CASING
 
-   only elements carrying the bb-interface-text class will
-   respond to this setting
-   product names, retailer names an database content will 
-   not be affected
+   only interface copy should use bb-interface-text
+   product, retailer and brand data should not use it
    ========================================================= */
 
 [data-casing="sentence"] .bb-interface-text {
@@ -161,8 +198,8 @@ body {
 /* =========================================================
    FONT OPTIONS
 
-   these define the font value but do not apply it globally
-   yet, keeping the existing appearance safe
+   these are defined but are not applied to the body yet
+   that prevents an accidental font change during this step
    ========================================================= */
 
 [data-font="geist"] {
@@ -182,14 +219,15 @@ body {
 
 /* =========================================================
    CORNER OPTIONS
+
+   the current Soft setting uses the agreed 15px radius for
+   every non-circular element
    ========================================================= */
 
 [data-radius="soft"] {
-  --bb-card-radius: 15px;
-  --bb-control-radius: 12px;
+  --bb-radius: 15px;
 }
 
 [data-radius="compact"] {
-  --bb-card-radius: 8px;
-  --bb-control-radius: 7px;
+  --bb-radius: 8px;
 }
