@@ -171,44 +171,6 @@ textarea {
     0 2px 6px rgb(44 125 160 / 18%);
 }
 
-/* =========================================================
-   BERRY THEME — DARK
-   ========================================================= */
-
-:root[data-theme="berry"] {
-  /* backgrounds and surfaces */
-  --bb-background: #170e13;
-  --bb-surface: #24171e;
-  --bb-surface-soft: #33212a;
-
-  /* text */
-  --bb-text-primary: #fff4f7;
-  --bb-text-secondary: #e8ced8;
-  --bb-text-muted: #c7a7b4;
-  --bb-text-placeholder: #a98593;
-
-  /* accent colours */
-  --bb-accent: #ff6f9f;
-  --bb-accent-strong: #ffd0df;
-  --bb-accent-soft: #4a2233;
-  --bb-on-accent: #21151b;
-
-  /* borders and focus */
-  --bb-border: #95677a;
-  --bb-focus: #ff8ab2;
-  --bb-focus-ring: #ff8ab2;
-
-  /* shadows */
-  --bb-shadow-surface:
-    0 4px 16px rgb(0 0 0 / 28%);
-
-  --bb-shadow-drawer:
-    12px 0 40px rgb(0 0 0 / 44%);
-
-  --bb-shadow-control:
-    0 2px 8px rgb(0 0 0 / 32%);
-}
-
 
 /* =========================================================
    MINIMAL THEME
@@ -280,40 +242,4 @@ textarea {
   --bb-radius: 8px;
 }
 
-/* =========================================================
-   FOREST THEME
-   ========================================================= */
 
-:root[data-theme="forest"] {
-  /* clean neutral surfaces */
-  --bb-background: #f5f8f5;
-  --bb-surface: #ffffff;
-  --bb-surface-soft: #eef3ef;
-
-  /* deep green text */
-  --bb-text-primary: #344e41;
-  --bb-text-secondary: #3a5a40;
-  --bb-text-muted: #588157;
-  --bb-text-placeholder: #687c70;
-
-  /* deep forest accents */
-  --bb-accent: #344e41;
-  --bb-accent-strong: #2a4035;
-  --bb-accent-soft: #dfe9e1;
-  --bb-on-accent: #ffffff;
-
-  /* green borders and focus */
-  --bb-border: #758c7a;
-  --bb-focus: #588157;
-  --bb-focus-ring: #c8d8cc;
-
-  /* green-toned shadows */
-  --bb-shadow-surface:
-    0 4px 14px rgb(52 78 65 / 10%);
-
-  --bb-shadow-drawer:
-    12px 0 40px rgb(52 78 65 / 24%);
-
-  --bb-shadow-control:
-    0 2px 6px rgb(52 78 65 / 18%);
-}
