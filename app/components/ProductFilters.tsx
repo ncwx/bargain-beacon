@@ -6,6 +6,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
+import { formatInterfaceText } from "@/config/design";
 
 type ProductFiltersProps = {
   retailers: string[];
@@ -38,7 +39,6 @@ export default function ProductFilters({
 
   const [isOpen, setIsOpen] =
     useState(false);
-
 
   const safeMinPrice = Number.isFinite(
     minPrice,
@@ -358,7 +358,11 @@ export default function ProductFilters({
               <path d="M11 16v4" />
             </svg>
 
-            <span>filters</span>
+            <span>
+              {formatInterfaceText(
+                "Filters",
+              )}
+            </span>
 
             {activeFilterCount > 0 && (
               <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fb99b9] px-1.5 text-xs font-bold text-[#31262b]">
@@ -368,7 +372,9 @@ export default function ProductFilters({
           </button>
 
           <span className="whitespace-nowrap text-sm font-medium text-[#806c74]">
-            {resultLabel}
+            {formatInterfaceText(
+              resultLabel,
+            )}
           </span>
         </div>
 
@@ -377,10 +383,12 @@ export default function ProductFilters({
             className="shrink-0 text-sm font-medium text-[#806c74]"
             htmlFor="sort-products"
           >
-            sort by
+            {formatInterfaceText(
+              "Sort by",
+            )}
           </label>
 
-          <div className="relative flex-1 sm:flex-none font-bold text-[#31262b]">
+          <div className="relative flex-1 font-bold text-[#31262b] sm:flex-none">
             <select
               id="sort-products"
               value={selectedSort}
@@ -393,23 +401,33 @@ export default function ProductFilters({
               className={`${sortSelectClassName} w-full`}
             >
               <option value="value">
-                best value
+                {formatInterfaceText(
+                  "Best value",
+                )}
               </option>
 
               <option value="price-low">
-                lowest delivered price
+                {formatInterfaceText(
+                  "Lowest delivered price",
+                )}
               </option>
 
               <option value="sheets-high">
-                most sheets
+                {formatInterfaceText(
+                  "Most sheets",
+                )}
               </option>
 
               <option value="rating-high">
-                highest rated
+                {formatInterfaceText(
+                  "Highest rated",
+                )}
               </option>
 
               <option value="reviews-high">
-                most reviewed
+                {formatInterfaceText(
+                  "Most reviewed",
+                )}
               </option>
             </select>
 
@@ -435,7 +453,7 @@ export default function ProductFilters({
         <div className="fixed inset-0 z-50">
           <button
             type="button"
-            aria-label="close filters"
+            aria-label="Close filters"
             onClick={() =>
               setIsOpen(false)
             }
@@ -464,17 +482,21 @@ export default function ProductFilters({
                   id="filter-drawer-title"
                   className="text-xl font-bold text-[#31262b]"
                 >
-                  filters
+                  {formatInterfaceText(
+                    "Filters",
+                  )}
                 </h2>
 
                 <p className="mt-1 text-sm text-[#806c74]">
-                  narrow down your results
+                  {formatInterfaceText(
+                    "Narrow down your results",
+                  )}
                 </p>
               </div>
 
               <button
                 type="button"
-                aria-label="close filters"
+                aria-label="Close filters"
                 onClick={() =>
                   setIsOpen(false)
                 }
@@ -490,7 +512,9 @@ export default function ProductFilters({
                   htmlFor="retailer-filter"
                   className="mb-2 block text-sm font-semibold text-[#31262b]"
                 >
-                  retailer
+                  {formatInterfaceText(
+                    "Retailer",
+                  )}
                 </label>
 
                 <select
@@ -507,7 +531,9 @@ export default function ProductFilters({
                   }
                 >
                   <option value="">
-                    all retailers
+                    {formatInterfaceText(
+                      "All retailers",
+                    )}
                   </option>
 
                   {retailers.map(
@@ -516,7 +542,7 @@ export default function ProductFilters({
                         key={retailer}
                         value={retailer}
                       >
-                        {retailer.toLowerCase()}
+                        {retailer}
                       </option>
                     ),
                   )}
@@ -528,7 +554,9 @@ export default function ProductFilters({
                   htmlFor="brand-filter"
                   className="mb-2 block text-sm font-semibold text-[#31262b]"
                 >
-                  brand
+                  {formatInterfaceText(
+                    "Brand",
+                  )}
                 </label>
 
                 <select
@@ -545,7 +573,9 @@ export default function ProductFilters({
                   }
                 >
                   <option value="">
-                    all brands
+                    {formatInterfaceText(
+                      "All brands",
+                    )}
                   </option>
 
                   {brands.map((brand) => (
@@ -553,7 +583,7 @@ export default function ProductFilters({
                       key={brand}
                       value={brand}
                     >
-                      {brand.toLowerCase()}
+                      {brand}
                     </option>
                   ))}
                 </select>
@@ -561,13 +591,17 @@ export default function ProductFilters({
 
               <fieldset className="border-b border-[#f2e4e9] py-6">
                 <legend className="mb-3 text-sm font-semibold text-[#31262b]">
-                  availability
+                  {formatInterfaceText(
+                    "Availability",
+                  )}
                 </legend>
 
                 <div className="space-y-3">
                   <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
                     <span className="text-base text-[#31262b]">
-                      in stock only
+                      {formatInterfaceText(
+                        "In stock only",
+                      )}
                     </span>
 
                     <input
@@ -586,7 +620,9 @@ export default function ProductFilters({
 
                   <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-[#f2e4e9] bg-white px-4 py-3 transition hover:border-[#fb99b9]">
                     <span className="text-base text-[#31262b]">
-                      delivery available
+                      {formatInterfaceText(
+                        "Delivery available",
+                      )}
                     </span>
 
                     <input
@@ -608,7 +644,9 @@ export default function ProductFilters({
               <section className="pt-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-[#31262b]">
-                    price
+                    {formatInterfaceText(
+                      "Price",
+                    )}
                   </h3>
 
                   <span className="text-sm font-medium text-[#806c74]">
@@ -631,7 +669,7 @@ export default function ProductFilters({
                   />
 
                   <input
-                    aria-label="minimum price"
+                    aria-label="Minimum price"
                     aria-valuetext={`£${priceRange.min}`}
                     type="range"
                     min={safeMinPrice}
@@ -699,7 +737,7 @@ export default function ProductFilters({
                   />
 
                   <input
-                    aria-label="maximum price"
+                    aria-label="Maximum price"
                     aria-valuetext={`£${priceRange.max}`}
                     type="range"
                     min={safeMinPrice}
@@ -788,7 +826,9 @@ export default function ProductFilters({
                 }
                 className="min-h-[46px] flex-1 rounded-xl border border-[#f2e4e9] px-4 py-3 text-sm font-semibold text-[#806c74] transition hover:border-[#fb99b9] hover:text-[#31262b] disabled:cursor-not-allowed disabled:opacity-40"
               >
-                clear all
+                {formatInterfaceText(
+                  "Clear all",
+                )}
               </button>
 
               <button
@@ -798,7 +838,9 @@ export default function ProductFilters({
                 }
                 className="min-h-[46px] flex-1 rounded-xl bg-[#fb99b9] px-4 py-3 text-sm font-bold text-[#31262b] transition hover:bg-[#f889af] focus:outline-none focus:ring-4 focus:ring-[#ffecef]"
               >
-                view results
+                {formatInterfaceText(
+                  "View results",
+                )}
               </button>
             </div>
           </aside>

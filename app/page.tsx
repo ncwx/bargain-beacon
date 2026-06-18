@@ -137,11 +137,12 @@ export default async function Home({
       ? resolvedSearchParams.sort
       : "value";
 
-      const inStockOnly =
-        resolvedSearchParams.stock !== "all";
+  const inStockOnly =
+    resolvedSearchParams.stock !== "all";
 
-      const deliveryOnly =
-        resolvedSearchParams.delivery !== "all";
+  const deliveryOnly =
+    resolvedSearchParams.delivery !==
+    "all";
 
   const minPriceParam =
     typeof resolvedSearchParams.minPrice ===
@@ -188,9 +189,9 @@ export default async function Home({
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#fff8fa] p-8 text-base lowercase text-[#31262b]">
-        <p>
-          error loading products:{" "}
+      <main className="min-h-screen bg-[#fff8fa] p-8 text-base text-[#31262b]">
+        <p className="bb-interface-text">
+          Error loading products:{" "}
           {error.message}
         </p>
       </main>
@@ -265,7 +266,7 @@ export default async function Home({
             product.product_name,
           brand: product.brand,
           retailer:
-            retailer?.name ?? "unknown",
+            retailer?.name ?? "Unknown",
           url: product.url,
           price,
           rating,
@@ -291,7 +292,7 @@ export default async function Home({
       ...row,
       rank: index + 1,
     }));
-    
+
   const deliveredPrices = ranked.map(
     (row) =>
       row.score.deliveredPrice,
@@ -459,7 +460,8 @@ export default async function Home({
         row.deliveryAvailable,
     );
 
-  const bestProduct = eligibleProducts[0];
+  const bestProduct =
+    eligibleProducts[0];
 
   const bestRawScore =
     bestProduct?.score
@@ -519,7 +521,7 @@ export default async function Home({
     : `${ranked.length} products`;
 
   return (
-    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 lowercase sm:px-8 lg:px-12">
+    <main className="min-h-screen bg-[#fff8fa] px-5 py-8 text-base leading-6 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div>
@@ -527,8 +529,8 @@ export default async function Home({
               bargain beacon
             </h1>
 
-            <p className="mt-2 text-[#7a6970]">
-              find the best value,
+            <p className="bb-interface-text mt-2 text-[#7a6970]">
+              Find the best value,
               not just the lowest price
             </p>
           </div>
@@ -546,13 +548,18 @@ export default async function Home({
 
         <section className="relative mb-7 overflow-hidden rounded-[15px] border border-[#f6c8d6] bg-white px-8 py-10 shadow-[0_5px_18px_rgba(120,70,90,0.06)] sm:px-10 lg:min-h-[320px] lg:px-12 lg:py-12">
           <div className="relative z-10 lg:max-w-[65%]">
-            <p className="text-3xl font-semibold leading-tight text-[#f15f91]">
-              best value today
+            <p className="bb-interface-text text-3xl font-semibold leading-tight text-[#f15f91]">
+              Best value today
             </p>
 
             <h2 className="mt-6 text-4xl font-semibold tracking-tight text-[#31262b] sm:text-5xl lg:text-6xl">
-              {bestProduct?.productName ??
-                "no eligible products"}
+              {bestProduct ? (
+                bestProduct.productName
+              ) : (
+                <span className="bb-interface-text">
+                  No eligible products
+                </span>
+              )}
             </h2>
 
             <p className="mt-4 text-3xl font-medium leading-tight text-[#6f5a62]">
@@ -589,7 +596,7 @@ export default async function Home({
             </span>
 
             <span className="inline-flex items-center gap-3 rounded-[12px] bg-[#fff1f5] px-4 py-2.5 text-base text-[#5f4b53]">
-              <span className="font-medium">
+              <span className="bb-interface-text font-medium">
                 {bestProduct &&
                 bestRawScore !== null
                   ? `${calculateDisplayScore(
@@ -605,12 +612,12 @@ export default async function Home({
           <div className="pointer-events-none absolute -bottom-16 -right-8 hidden h-[370px] w-[370px] rounded-full bg-[#fbe4ec] lg:block">
             <div className="absolute inset-[74px] flex items-center justify-center rounded-full bg-white/80 shadow-[0_5px_18px_rgba(120,70,90,0.05)]">
               <div className="text-center">
-                <p className="text-5xl font-semibold text-[#fb99b9]">
+                <p className="bb-interface-text text-5xl font-semibold text-[#fb99b9]">
                   3 ply
                 </p>
 
-                <p className="mt-2 text-base text-[#6f5a62]">
-                  best-value pick
+                <p className="bb-interface-text mt-2 text-base text-[#6f5a62]">
+                  Best-value pick
                 </p>
               </div>
             </div>
@@ -647,16 +654,17 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="text-lg font-bold text-[#b52f61]">
-                currently comparing
+              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+                Currently comparing
               </p>
 
-              <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
-                {eligibleProducts.length} products
+              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+                {eligibleProducts.length}{" "}
+                products
               </p>
 
-              <p className="mt-2 text-base text-[#806c74]">
-                eligible 3-ply listings
+              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+                Eligible 3-ply listings
               </p>
             </div>
           </article>
@@ -696,16 +704,16 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="text-lg font-bold text-[#b52f61]">
-                scanning
+              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+                Scanning
               </p>
 
-              <p className="mt-1 text-2xl font-medium leading-tight text-[#31262b]">
+              <p className="bb-interface-text mt-1 text-2xl font-medium leading-tight text-[#31262b]">
                 {retailerCount} retailers
               </p>
 
-              <p className="mt-2 text-base text-[#806c74]">
-                delivery-friendly
+              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+                Delivery-friendly
                 sources
               </p>
             </div>
@@ -728,16 +736,16 @@ export default async function Home({
             </div>
 
             <div>
-              <p className="text-lg font-bold text-[#b52f61]">
-                last scanned
+              <p className="bb-interface-text text-lg font-bold text-[#b52f61]">
+                Last scanned
               </p>
 
               <p className="mt-1 text-xl font-medium leading-snug text-[#31262b]">
                 {lastScanned}
               </p>
 
-              <p className="mt-2 text-base text-[#806c74]">
-                latest stored price
+              <p className="bb-interface-text mt-2 text-base text-[#806c74]">
+                Latest stored price
                 check
               </p>
             </div>
@@ -778,36 +786,36 @@ export default async function Home({
 
               <thead>
                 <tr className="border-b border-[#efced9] bg-[#fff5f8] text-left text-[#b52f61]">
-                  <th className="px-5 py-5 text-base font-bold">
-                    value rank
+                  <th className="bb-interface-text px-5 py-5 text-base font-bold">
+                    Value rank
                   </th>
 
-                  <th className="px-5 py-5 text-base font-bold">
-                    product
+                  <th className="bb-interface-text px-5 py-5 text-base font-bold">
+                    Product
                   </th>
 
-                  <th className="px-5 py-5 text-base font-bold">
-                    retailer
+                  <th className="bb-interface-text px-5 py-5 text-base font-bold">
+                    Retailer
                   </th>
 
-                  <th className="px-5 py-5 text-center text-base font-bold">
-                    price
+                  <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
+                    Price
                   </th>
 
-                  <th className="px-5 py-5 text-center text-base font-bold">
-                    sheets
+                  <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
+                    Sheets
                   </th>
 
-                  <th className="px-5 py-5 text-center text-base font-bold">
-                    rating
+                  <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
+                    Rating
                   </th>
 
-                  <th className="px-5 py-5 text-center text-base font-bold">
-                    reviews
+                  <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
+                    Reviews
                   </th>
 
-                  <th className="px-5 py-5 text-center text-base font-bold">
-                    score
+                  <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
+                    Score
                   </th>
                 </tr>
               </thead>
@@ -845,7 +853,7 @@ export default async function Home({
                           </span>
                         )}
 
-                        <p className="mt-1 text-base text-[#806c74]">
+                        <p className="bb-interface-text mt-1 text-base text-[#806c74]">
                           {row.rollsPerPack ??
                             "—"}{" "}
                           rolls
@@ -855,14 +863,14 @@ export default async function Home({
                           !row.deliveryAvailable) && (
                           <div className="mt-2 flex flex-wrap gap-2">
                             {!row.inStock && (
-                              <span className="rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
-                                out of stock
+                              <span className="bb-interface-text rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                                Out of stock
                               </span>
                             )}
 
                             {!row.deliveryAvailable && (
-                              <span className="rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
-                                collection only
+                              <span className="bb-interface-text rounded-lg bg-[#f3eef0] px-2 py-1 text-xs font-medium text-[#806c74]">
+                                Collection only
                               </span>
                             )}
                           </div>
@@ -934,11 +942,11 @@ export default async function Home({
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-5 py-12 text-center text-base text-[#6f5a62]"
+                      className="bb-interface-text px-5 py-12 text-center text-base text-[#6f5a62]"
                     >
                       {hasActiveCriteria
-                        ? "no matching products found"
-                        : "no eligible products found"}
+                        ? "No matching products found"
+                        : "No eligible products found"}
                     </td>
                   </tr>
                 )}

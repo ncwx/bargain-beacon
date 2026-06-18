@@ -1,8 +1,60 @@
 @import "tailwindcss";
 
+/* =========================================================
+   EXISTING NEXT.JS GLOBALS
+   ========================================================= */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* =======================================================
+     BARGAIN BEACON DESIGN TOKENS
+
+     these store the theme values centrally
+     existing components are not using them yet, so adding
+     these should not alter the current appearance
+     ======================================================= */
+
+  /* backgrounds */
+  --bb-background: #fff8fa;
+  --bb-surface: #ffffff;
+  --bb-surface-soft: #fff4f7;
+  --bb-surface-accent: #ffecef;
+
+  /* text */
+  --bb-text: #31262b;
+  --bb-text-muted: #806c74;
+  --bb-text-soft: #a58f97;
+
+  /* accent colours */
+  --bb-accent: #ed4f87;
+  --bb-accent-strong: #bd285d;
+  --bb-accent-soft: #fb99b9;
+
+  /* borders and focus */
+  --bb-border: #f2e4e9;
+  --bb-border-strong: #f1dce3;
+  --bb-focus-border: #fb99b9;
+  --bb-focus-ring: #ffecef;
+
+  /* corners */
+  --bb-card-radius: 15px;
+  --bb-control-radius: 12px;
+  --bb-pill-radius: 9999px;
+
+  /* shadows */
+  --bb-card-shadow:
+    0 6px 20px rgb(79 41 56 / 5%);
+
+  --bb-drawer-shadow:
+    12px 0 40px rgb(49 38 43 / 18%);
+
+  /* font setting for future use */
+  --bb-font-selected:
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
 @theme inline {
@@ -22,5 +74,122 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  /*
+   * keep the app's current font unchanged for now
+   * we will connect this to --bb-font-selected safely later
+   */
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+/* =========================================================
+   COLOUR THEMES
+   ========================================================= */
+
+[data-theme="blush"] {
+  --bb-background: #fff8fa;
+  --bb-surface: #ffffff;
+  --bb-surface-soft: #fff4f7;
+  --bb-surface-accent: #ffecef;
+
+  --bb-text: #31262b;
+  --bb-text-muted: #806c74;
+  --bb-text-soft: #a58f97;
+
+  --bb-accent: #ed4f87;
+  --bb-accent-strong: #bd285d;
+  --bb-accent-soft: #fb99b9;
+
+  --bb-border: #f2e4e9;
+  --bb-border-strong: #f1dce3;
+  --bb-focus-border: #fb99b9;
+  --bb-focus-ring: #ffecef;
+
+  --bb-card-shadow:
+    0 6px 20px rgb(79 41 56 / 5%);
+
+  --bb-drawer-shadow:
+    12px 0 40px rgb(49 38 43 / 18%);
+}
+
+[data-theme="minimal"] {
+  --bb-background: #f7f7f7;
+  --bb-surface: #ffffff;
+  --bb-surface-soft: #f2f2f2;
+  --bb-surface-accent: #e9e9e9;
+
+  --bb-text: #222222;
+  --bb-text-muted: #666666;
+  --bb-text-soft: #8a8a8a;
+
+  --bb-accent: #333333;
+  --bb-accent-strong: #111111;
+  --bb-accent-soft: #d8d8d8;
+
+  --bb-border: #dedede;
+  --bb-border-strong: #c9c9c9;
+  --bb-focus-border: #555555;
+  --bb-focus-ring: #e4e4e4;
+
+  --bb-card-shadow:
+    0 6px 20px rgb(0 0 0 / 5%);
+
+  --bb-drawer-shadow:
+    12px 0 40px rgb(0 0 0 / 16%);
+}
+
+/* =========================================================
+   INTERFACE CASING
+
+   only elements carrying the bb-interface-text class will
+   respond to this setting
+   product names, retailer names an database content will 
+   not be affected
+   ========================================================= */
+
+[data-casing="sentence"] .bb-interface-text {
+  text-transform: none;
+}
+
+[data-casing="lowercase"] .bb-interface-text {
+  text-transform: lowercase;
+}
+
+/* =========================================================
+   FONT OPTIONS
+
+   these define the font value but do not apply it globally
+   yet, keeping the existing appearance safe
+   ========================================================= */
+
+[data-font="geist"] {
+  --bb-font-selected:
+    var(--font-geist-sans),
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+[data-font="system"] {
+  --bb-font-selected:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+/* =========================================================
+   CORNER OPTIONS
+   ========================================================= */
+
+[data-radius="soft"] {
+  --bb-card-radius: 15px;
+  --bb-control-radius: 12px;
+}
+
+[data-radius="compact"] {
+  --bb-card-radius: 8px;
+  --bb-control-radius: 7px;
 }
