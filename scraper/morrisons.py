@@ -395,16 +395,80 @@ def scrape_product(url: str) -> dict[str, Any]:
 
 
 def main() -> None:
+    products: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+
     for url in PRODUCT_URLS:
-        print(f"\nScraping: {url}")
+        print(f"Scraping: {url}")
 
         try:
             product = scrape_product(url)
-        except (requests.RequestException, ValueError, KeyError) as error:
+        except (
+            requests.RequestException,
+            ValueError,
+            KeyError,
+            TypeError,
+        ) as error:
             print(f"FAILED: {error}")
+
+            failures.append(
+                {
+                    "url": url,
+                    "error": str(error),
+                }
+            )
             continue
 
-        print(json.dumps(product, indent=2, ensure_ascii=False))
+        products.append(product)
 
+        print(
+            f"OK: {product['product_name']} "
+            f"[{product['include_status']}]"
+        )
+
+    output = {
+        "scanned_at": datetime.now(timezone.utc).isoformat(),
+        "retailer": "Morrisons",
+        "successful_count": len(products),
+        "failure_count": len(failures),
+        "products": products,
+        "failures": failures,
+    }
+
+    output_path = "morrisons_results.json"
+
+    with open(output_path, "w", encoding="utf-8") as file:
+        json.dump(
+            output,
+            file,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+    included_count = sum(
+        product["include_status"] == "include"
+        for product in products
+    )
+
+    review_count = sum(
+        str(product["include_status"]).startswith("review_")
+        for product in products
+    )
+
+    excluded_count = (
+        len(products)
+        - included_count
+        - review_count
+    )
+
+    print("\n--- Scan summary ---")
+    print(f"Successful: {len(products)}")
+    print(f"Included: {included_count}")
+    print(f"Needs review: {review_count}")
+    print(f"Excluded: {excluded_count}")
+    print(f"Failed: {len(failures)}")
+    print(f"Saved to: {output_path}")
+
+    
 if __name__ == "__main__":
     main()
