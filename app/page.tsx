@@ -24,6 +24,7 @@ type ProductRow = {
   total_sheets: number | null;
   rating: DatabaseNumber | null;
   review_count: number | null;
+  include_status: string | null;
   retailers: OneOrMany<RetailerRow>;
 };
 
@@ -162,7 +163,7 @@ export default async function Home({
       : null;
 
   const { data, error } = await supabase
-    .from("price_checks")
+    .from("latest_price_checks")
     .select(`
       id,
       price,
@@ -182,6 +183,7 @@ export default async function Home({
         total_sheets,
         rating,
         review_count,
+        include_status,
         retailers (
           name
         )
@@ -211,7 +213,11 @@ export default async function Home({
 
       if (
         !product ||
-        product.ply !== 3
+        product.ply !== 3 ||
+        (
+          product.include_status !== null &&
+          product.include_status !== "include"
+        )
       ) {
         return [];
       }

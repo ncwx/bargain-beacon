@@ -386,7 +386,7 @@ def scrape_product(url: str) -> dict[str, Any]:
             else None
         ),
         "in_stock": availability.endswith("InStock"),
-        "delivery_available": None,
+        "delivery_available": True,
         "total_sheets_source": total_sheets_source,
         "data_confidence": data_confidence,
         "include_status": include_status,
