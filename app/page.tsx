@@ -24,6 +24,7 @@ type ProductRow = {
   total_sheets: number | null;
   rating: DatabaseNumber | null;
   review_count: number | null;
+  include_status: string | null;
   retailers: OneOrMany<RetailerRow>;
 };
 
@@ -162,7 +163,7 @@ export default async function Home({
       : null;
 
   const { data, error } = await supabase
-    .from("price_checks")
+    .from("latest_price_checks")
     .select(`
       id,
       price,
@@ -182,6 +183,7 @@ export default async function Home({
         total_sheets,
         rating,
         review_count,
+        include_status,
         retailers (
           name
         )
@@ -211,7 +213,11 @@ export default async function Home({
 
       if (
         !product ||
-        product.ply !== 3
+        product.ply !== 3 ||
+        (
+          product.include_status !== null &&
+          product.include_status !== "include"
+        )
       ) {
         return [];
       }
@@ -244,9 +250,6 @@ export default async function Home({
           product.rolls_per_pack,
         sheets_per_roll:
           product.sheets_per_roll,
-        delivery_fee: deliveryFee,
-        small_order_charge:
-          smallOrderCharge,
         rating,
         review_count:
           product.review_count,
@@ -256,6 +259,13 @@ export default async function Home({
         return [];
       }
 
+      const deliveryCalculatedSeparately =
+        row.delivery_available === true &&
+        (
+          deliveryFee === null ||
+          smallOrderCharge === null
+        );
+        
       const retailer = unwrapRelation(
         product.retailers,
       );
@@ -278,6 +288,7 @@ export default async function Home({
           deliveryAvailable:
             row.delivery_available ===
             true,
+            deliveryCalculatedSeparately,
           rollsPerPack:
             product.rolls_per_pack,
           score,
@@ -294,25 +305,25 @@ export default async function Home({
       rank: index + 1,
     }));
 
-  const deliveredPrices = ranked.map(
+  const itemPrices = ranked.map(
     (row) =>
-      row.score.deliveredPrice,
+      row.score.itemPrice,
   );
 
   const priceRangeMin =
-    deliveredPrices.length > 0
+    itemPrices.length > 0
       ? Math.floor(
-          Math.min(...deliveredPrices),
+          Math.min(...itemPrices),
         )
       : 0;
 
   const priceRangeMax =
-    deliveredPrices.length > 0
+    itemPrices.length > 0
       ? Math.max(
           priceRangeMin + 1,
           Math.ceil(
             Math.max(
-              ...deliveredPrices,
+              ...itemPrices,
             ),
           ),
         )
@@ -392,9 +403,9 @@ export default async function Home({
         row.brand === selectedBrand;
 
       const matchesPriceRange =
-        row.score.deliveredPrice >=
+        row.score.itemPrice >=
           selectedMinPrice &&
-        row.score.deliveredPrice <=
+        row.score.itemPrice <=
           selectedMaxPrice;
 
       const matchesStock =
@@ -420,8 +431,8 @@ export default async function Home({
     switch (selectedSort) {
       case "price-low":
         return (
-          a.score.deliveredPrice -
-            b.score.deliveredPrice ||
+          a.score.itemPrice -
+            b.score.itemPrice ||
           a.rank - b.rank
         );
 
@@ -596,7 +607,7 @@ export default async function Home({
               </svg>
 
               {bestProduct
-                ? `£${bestProduct.score.deliveredPrice.toFixed(
+                ? `£${bestProduct.score.itemPrice.toFixed(
                     2,
                   )}`
                 : "—"}
@@ -610,7 +621,7 @@ export default async function Home({
                       bestProduct.score
                         .adjustedValueScore,
                       bestRawScore,
-                    )}/100 value score`
+                    )}/100 item value`
                   : "—"}
               </span>
             </span>
@@ -822,7 +833,7 @@ export default async function Home({
                   </th>
 
                   <th className="bb-interface-text px-5 py-5 text-center text-base font-bold">
-                    Score
+                    Item Score
                   </th>
                 </tr>
               </thead>
@@ -867,7 +878,8 @@ export default async function Home({
                         </p>
 
                         {(!row.inStock ||
-                          !row.deliveryAvailable) && (
+                          !row.deliveryAvailable) ||
+                          row.deliveryCalculatedSeparately&& (
                           <div className="mt-2 flex flex-wrap gap-2">
                             {!row.inStock && (
                               <span className="bb-interface-text rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-2 py-1 text-xs font-medium text-[var(--bb-text-muted)]">
@@ -880,6 +892,12 @@ export default async function Home({
                                 Collection only
                               </span>
                             )}
+
+                            {row.deliveryCalculatedSeparately && (
+                              <span className="bb-interface-text rounded-[var(--bb-radius)] bg-[var(--bb-surface-soft)] px-2 py-1 text-xs font-medium text-[var(--bb-text-muted)]">
+                                Delivery calculated separately
+                              </span>
+                            )}
                           </div>
                         )}
                       </td>
@@ -890,7 +908,7 @@ export default async function Home({
 
                       <td className="px-5 py-5 text-center font-medium tabular-nums text-[var(--bb-text-primary)]">
                         £
-                        {row.score.deliveredPrice.toFixed(
+                        {row.score.itemPrice.toFixed(
                           2,
                         )}
                       </td>

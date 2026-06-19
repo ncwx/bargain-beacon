@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+} from "react";
 import {
   usePathname,
   useRouter,
@@ -19,74 +22,105 @@ export default function SearchBar() {
   const searchParamsString =
     searchParams.toString();
 
-  const [query, setQuery] =
-    useState(currentQuery);
+  const inputRef =
+    useRef<HTMLInputElement>(null);
 
-  /*
-   * Keep the input synchronised when the user
-   * navigates backwards or forwards.
-   */
-  useEffect(() => {
-    setQuery(currentQuery);
-  }, [currentQuery]);
+  const debounceRef =
+    useRef<number | null>(null);
 
-  /*
-   * Update the URL shortly after the user stops typing.
-   * router.replace avoids creating a browser-history
-   * entry for every individual character.
-   */
-  useEffect(() => {
-    if (query === currentQuery) {
+  function navigateToQuery(
+    nextQuery: string,
+  ) {
+    const trimmedQuery =
+      nextQuery.trim();
+
+    if (trimmedQuery === currentQuery) {
       return;
     }
 
-    const timeout = window.setTimeout(
-      () => {
-        const params =
-          new URLSearchParams(
-            searchParamsString,
-          );
+    const params =
+      new URLSearchParams(
+        searchParamsString,
+      );
 
-        const trimmedQuery =
-          query.trim();
+    if (trimmedQuery) {
+      params.set("q", trimmedQuery);
+    } else {
+      params.delete("q");
+    }
 
-        if (trimmedQuery) {
-          params.set(
-            "q",
-            trimmedQuery,
-          );
-        } else {
-          params.delete("q");
-        }
+    const queryString =
+      params.toString();
 
-        const queryString =
-          params.toString();
-
-        router.replace(
-          queryString
-            ? `${pathname}?${queryString}`
-            : pathname,
-          {
-            scroll: false,
-          },
-        );
+    router.replace(
+      queryString
+        ? `${pathname}?${queryString}`
+        : pathname,
+      {
+        scroll: false,
       },
-      250,
     );
+  }
 
+  function scheduleQueryUpdate(
+    nextQuery: string,
+  ) {
+    if (debounceRef.current !== null) {
+      window.clearTimeout(
+        debounceRef.current,
+      );
+    }
+
+    debounceRef.current =
+      window.setTimeout(() => {
+        navigateToQuery(nextQuery);
+        debounceRef.current = null;
+      }, 250);
+  }
+
+  /*
+   * Synchronise the actual input element when
+   * browser back/forward navigation changes
+   * the query string.
+   */
+  useEffect(() => {
+    const input = inputRef.current;
+
+    if (
+      input &&
+      input.value !== currentQuery
+    ) {
+      input.value = currentQuery;
+    }
+  }, [currentQuery]);
+
+  useEffect(() => {
     return () => {
-      window.clearTimeout(timeout);
+      if (
+        debounceRef.current !== null
+      ) {
+        window.clearTimeout(
+          debounceRef.current,
+        );
+      }
     };
-  }, [
-    query,
-    currentQuery,
-    pathname,
-    router,
-    searchParamsString,
-  ]);
+  }, []);
 
   function clearSearch() {
-    setQuery("");
+    if (debounceRef.current !== null) {
+      window.clearTimeout(
+        debounceRef.current,
+      );
+
+      debounceRef.current = null;
+    }
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+      inputRef.current.focus();
+    }
+
+    navigateToQuery("");
   }
 
   return (
@@ -118,11 +152,14 @@ export default function SearchBar() {
       </label>
 
       <input
+        ref={inputRef}
         id="product-search"
         type="text"
-        value={query}
+        defaultValue={currentQuery}
         onChange={(event) =>
-          setQuery(event.target.value)
+          scheduleQueryUpdate(
+            event.currentTarget.value,
+          )
         }
         placeholder={formatInterfaceText(
           "Search products, brands or retailers...",
@@ -130,6 +167,7 @@ export default function SearchBar() {
         autoComplete="off"
         spellCheck={false}
         className="
+          peer
           h-[48px]
           w-full
           rounded-[var(--bb-radius)]
@@ -151,36 +189,37 @@ export default function SearchBar() {
         "
       />
 
-      {query.length > 0 && (
-        <button
-          type="button"
-          onClick={clearSearch}
-          aria-label="Clear search"
-          className="
-            absolute
-            right-3
-            top-1/2
-            flex
-            h-8
-            w-8
-            -translate-y-1/2
-            items-center
-            justify-center
-            rounded-full
-            text-xl
-            leading-none
-            text-[var(--bb-text-muted)]
-            transition
-            hover:bg-[var(--bb-accent-soft)]
-            hover:text-[var(--bb-on-accent-soft)]
-            focus:outline-none
-            focus:ring-4
-            focus:ring-[var(--bb-focus-ring)]
-          "
-        >
-          ×
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={clearSearch}
+        aria-label="Clear search"
+        className="
+          absolute
+          right-3
+          top-1/2
+          flex
+          h-8
+          w-8
+          -translate-y-1/2
+          items-center
+          justify-center
+          rounded-full
+          text-xl
+          leading-none
+          text-[var(--bb-text-muted)]
+          opacity-100
+          transition
+          hover:bg-[var(--bb-accent-soft)]
+          hover:text-[var(--bb-on-accent-soft)]
+          focus:outline-none
+          focus:ring-4
+          focus:ring-[var(--bb-focus-ring)]
+          peer-placeholder-shown:pointer-events-none
+          peer-placeholder-shown:opacity-0
+        "
+      >
+        ×
+      </button>
     </div>
   );
 }

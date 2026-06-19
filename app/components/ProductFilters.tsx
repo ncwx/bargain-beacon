@@ -26,6 +26,11 @@ type PriceRange = {
   max: number;
 };
 
+type PriceRangeState = PriceRange & {
+  sourceMin: number;
+  sourceMax: number;
+};
+
 export default function ProductFilters({
   retailers,
   brands,
@@ -106,26 +111,31 @@ export default function ProductFilters({
         )
       : safeMaxPrice;
 
-  const [priceRange, setPriceRange] =
-    useState<PriceRange>({
-      min: selectedMinPrice,
-      max: selectedMaxPrice,
-    });
+  const [
+  priceRangeState,
+  setPriceRangeState,
+] = useState<PriceRangeState>({
+  sourceMin: selectedMinPrice,
+  sourceMax: selectedMaxPrice,
+  min: selectedMinPrice,
+  max: selectedMaxPrice,
+});
+
+  const priceRange: PriceRange =
+    priceRangeState.sourceMin ===
+      selectedMinPrice &&
+    priceRangeState.sourceMax ===
+      selectedMaxPrice
+      ? priceRangeState
+      : {
+          min: selectedMinPrice,
+          max: selectedMaxPrice,
+        };
 
   const [activeThumb, setActiveThumb] =
     useState<"min" | "max" | null>(
       null,
     );
-
-  useEffect(() => {
-    setPriceRange({
-      min: selectedMinPrice,
-      max: selectedMaxPrice,
-    });
-  }, [
-    selectedMinPrice,
-    selectedMaxPrice,
-  ]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -274,10 +284,12 @@ export default function ProductFilters({
       priceRange.max - 1,
     );
 
-    setPriceRange((current) => ({
-      ...current,
+    setPriceRangeState({
+      sourceMin: selectedMinPrice,
+      sourceMax: selectedMaxPrice,
       min: nextMin,
-    }));
+      max: priceRange.max,
+    });
   }
 
   function handleMaxChange(
@@ -288,10 +300,12 @@ export default function ProductFilters({
       priceRange.min + 1,
     );
 
-    setPriceRange((current) => ({
-      ...current,
+    setPriceRangeState({
+      sourceMin: selectedMinPrice,
+      sourceMax: selectedMaxPrice,
+      min: priceRange.min,
       max: nextMax,
-    }));
+    });
   }
 
   function clearFilters() {
@@ -408,7 +422,7 @@ export default function ProductFilters({
 
               <option value="price-low">
                 {formatInterfaceText(
-                  "Lowest delivered price",
+                  "Lowest item price",
                 )}
               </option>
 
