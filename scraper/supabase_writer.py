@@ -7,6 +7,8 @@ from typing import Any
 from dotenv import load_dotenv
 from supabase import Client, create_client
 
+from urllib.parse import urlsplit, urlunsplit
+
 
 ENV_FILE = Path(__file__).resolve().parent / ".env"
 
@@ -122,6 +124,29 @@ def build_product_row(
     }
 
 
+def normalise_product_url(
+    url: str | None,
+) -> str | None:
+    """Remove tracking parameters and normalise a product URL."""
+
+    if not url:
+        return None
+
+    parts = urlsplit(url.strip())
+
+    path = parts.path.rstrip("/") or "/"
+
+    return urlunsplit(
+        (
+            parts.scheme.lower(),
+            parts.netloc.lower(),
+            path,
+            "",
+            "",
+        )
+    )
+
+
 def find_existing_product_id(
     client: Client,
     retailer_id: str,
@@ -147,8 +172,8 @@ def find_existing_product_id(
     if rows:
         return str(rows[0]["id"])
 
-    # This allows an older URL-only database row to be
-    # upgraded with its retailer product ID.
+    # this allows an older URL-only database row to be
+    # upgraded with its retailer product ID
     if url:
         url_response = (
             client.table("products")
@@ -163,6 +188,24 @@ def find_existing_product_id(
         if url_rows:
             return str(url_rows[0]["id"])
 
+        canonical_url = normalise_product_url(url)
+
+    if canonical_url:
+        candidate_response = (
+            client.table("products")
+            .select("id, url")
+            .eq("retailer_id", retailer_id)
+            .execute()
+        )
+
+        for row in candidate_response.data or []:
+            existing_url = normalise_product_url(
+                row.get("url")
+            )
+
+            if existing_url == canonical_url:
+                return str(row["id"])
+                
     return None
 
 
