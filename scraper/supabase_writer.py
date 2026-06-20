@@ -174,6 +174,8 @@ def find_existing_product_id(
 
     # this allows an older URL-only database row to be
     # upgraded with its retailer product ID
+
+    canonical_url = normalise_product_url(url)
     if url:
         url_response = (
             client.table("products")
@@ -187,8 +189,6 @@ def find_existing_product_id(
 
         if url_rows:
             return str(url_rows[0]["id"])
-
-        canonical_url = normalise_product_url(url)
 
     if canonical_url:
         candidate_response = (
