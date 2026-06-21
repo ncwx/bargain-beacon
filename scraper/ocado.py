@@ -417,9 +417,30 @@ def scrape_product(
         "html.parser",
     )
 
-    product_data = (
-        find_product_json_ld(soup)
+    try:
+    product_data = find_product_json_ld(
+        soup
     )
+except ValueError as error:
+    page_title = (
+        soup.title.get_text(
+            " ",
+            strip=True,
+        )
+        if soup.title
+        else "no title"
+    )
+
+    page_preview = " ".join(
+        soup.stripped_strings
+    )[:300]
+
+    raise ValueError(
+        f"{error}. "
+        f"Page title: {page_title!r}. "
+        f"Downloaded: {len(html):,} characters. "
+        f"Preview: {page_preview!r}"
+    ) from error
 
     product_name = str(
         product_data.get("name") or ""
