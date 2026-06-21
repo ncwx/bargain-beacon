@@ -1,0 +1,66 @@
+name: Scan prices
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+      timezone: "Europe/London"
+
+  workflow_dispatch:
+    inputs:
+      retailer:
+        description: "Retailer to scan"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - morrisons
+          - ocado
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bargain-beacon-price-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-prices:
+    name: Run price scrapers
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      PYTHONUNBUFFERED: "1"
+
+    defaults:
+      run:
+        working-directory: scraper
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: scraper/requirements.txt
+
+      - name: Install scraper dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run scheduled scan
+        if: github.event_name == 'schedule'
+        run: python run_all_scrapers.py
+
+      - name: Run manually selected scan
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          python run_all_scrapers.py \
+            --retailer "${{ inputs.retailer }}"
