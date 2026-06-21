@@ -59,6 +59,10 @@ jobs:
         if: github.event_name == 'schedule'
         run: python run_all_scrapers.py --retailer morrisons
 
+      - name: Probe Ocado response
+        if: github.event_name == 'workflow_dispatch' && inputs.retailer == 'ocado'
+        run: python ocado_probe.py
+
       - name: Run manually selected scan
         if: github.event_name == 'workflow_dispatch'
         run: |
