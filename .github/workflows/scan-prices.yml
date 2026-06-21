@@ -57,23 +57,19 @@ jobs:
 
       - name: Install Chromium for Ocado
         if: >
-            github.event_name == 'schedule' ||
+          github.event_name == 'schedule' ||
+          (
+            github.event_name == 'workflow_dispatch' &&
             (
-                github.event_name == 'workflow_dispatch' &&
-                (
-                    inputs.retailer == 'all' ||
-                    inputs.retailer == 'ocado'
-                )
+              inputs.retailer == 'all' ||
+              inputs.retailer == 'ocado'
             )
+          )
         run: python -m playwright install --with-deps chromium
 
       - name: Run scheduled scan
         if: github.event_name == 'schedule'
-        run: python run_all_scrapers.py 
-
-      - name: Probe Ocado response
-        if: github.event_name == 'workflow_dispatch' && inputs.retailer == 'ocado'
-        run: python ocado_probe.py
+        run: python run_all_scrapers.py
 
       - name: Run manually selected scan
         if: github.event_name == 'workflow_dispatch'
