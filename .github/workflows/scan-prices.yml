@@ -55,21 +55,21 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Install browser for Ocado probe
-        if: github.event_name == 'workflow_dispatch' && inputs.retailer == 'ocado'
+      - name: Install Chromium for Ocado
+        if: >
+          github.event_name == 'schedule' ||
+          (
+            github.event_name == 'workflow_dispatch' &&
+            (
+              inputs.retailer == 'all' ||
+              inputs.retailer == 'ocado'
+            )
+          )
         run: python -m playwright install --with-deps chromium
-
-      - name: Probe Ocado with JavaScript
-        if: github.event_name == 'workflow_dispatch' && inputs.retailer == 'ocado'
-        run: python ocado_browser_probe.py
 
       - name: Run scheduled scan
         if: github.event_name == 'schedule'
-        run: python run_all_scrapers.py --retailer morrisons
-
-      - name: Probe Ocado response
-        if: github.event_name == 'workflow_dispatch' && inputs.retailer == 'ocado'
-        run: python ocado_probe.py
+        run: python run_all_scrapers.py
 
       - name: Run manually selected scan
         if: github.event_name == 'workflow_dispatch'

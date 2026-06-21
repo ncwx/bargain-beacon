@@ -5,8 +5,11 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
-import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import (
+    TimeoutError as PlaywrightTimeoutError,
+)
+from playwright.sync_api import sync_playwright
 
 
 PRODUCT_URLS = [
@@ -49,17 +52,57 @@ REQUIRED_PLY: int | None = 3
 
 
 def fetch_product_page(url: str) -> str:
-    """Download one Ocado product page."""
+    """Render and download one Ocado product page."""
 
-    response = requests.get(
-        url,
-        headers=HEADERS,
-        timeout=30,
-    )
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(
+            headless=True,
+        )
 
-    response.raise_for_status()
+        context = browser.new_context(
+            locale="en-GB",
+            user_agent=HEADERS["User-Agent"],
+            extra_http_headers={
+                "Accept-Language":
+                    HEADERS["Accept-Language"],
+            },
+        )
 
-    return response.text
+        page = context.new_page()
+
+        try:
+            page.goto(
+                url,
+                wait_until="domcontentloaded",
+                timeout=60_000,
+            )
+
+            page.wait_for_selector(
+                'script[type="application/ld+json"]',
+                state="attached",
+                timeout=30_000,
+            )
+
+            html = page.content()
+
+            if not html.strip():
+                raise ValueError(
+                    "Ocado returned an empty "
+                    "rendered page"
+                )
+
+            return html
+
+        except PlaywrightTimeoutError as error:
+            raise ValueError(
+                "Ocado did not expose JSON-LD "
+                "after JavaScript execution. "
+                f"Final URL: {page.url}"
+            ) from error
+
+        finally:
+            context.close()
+            browser.close()
 
 
 def find_product_json_ld(
@@ -597,7 +640,6 @@ def main() -> None:
             )
 
         except (
-            requests.RequestException,
             ValueError,
             KeyError,
             TypeError,
