@@ -435,12 +435,12 @@ def scrape_product(
             soup.stripped_strings
         )[:300]
 
-    raise ValueError(
-        f"{error}. "
-        f"Page title: {page_title!r}. "
-        f"Downloaded: {len(html):,} characters. "
-        f"Preview: {page_preview!r}"
-    ) from error
+        raise ValueError(
+            f"{error}. "
+            f"Page title: {page_title!r}. "
+            f"Downloaded: {len(html):,} characters. "
+            f"Preview: {page_preview!r}"
+        ) from error
 
     product_name = str(
         product_data.get("name") or ""
