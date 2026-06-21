@@ -418,22 +418,22 @@ def scrape_product(
     )
 
     try:
-    product_data = find_product_json_ld(
-        soup
-    )
-except ValueError as error:
-    page_title = (
-        soup.title.get_text(
-            " ",
-            strip=True,
+        product_data = find_product_json_ld(
+            soup
         )
-        if soup.title
-        else "no title"
-    )
+    except ValueError as error:
+        page_title = (
+            soup.title.get_text(
+                " ",
+                strip=True,
+            )
+            if soup.title
+            else "no title"
+        )
 
-    page_preview = " ".join(
-        soup.stripped_strings
-    )[:300]
+        page_preview = " ".join(
+            soup.stripped_strings
+        )[:300]
 
     raise ValueError(
         f"{error}. "
